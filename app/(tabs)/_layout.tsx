@@ -1,45 +1,87 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Tabs, Redirect } from "expo-router";
+import { useSession } from "@/components/ctx";
+import { Text, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { session, isLoading } = useSession();
+
+  // You can keep the splash screen open, or render a loading screen like we do here.
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  // Only require authentication within the (app) group's layout as users
+  // need to be able to access the (auth) group and sign in again.
+  if (!session) {
+    // On web, static rendering will stop here as the user is not authenticated
+    // in the headless Node process that the pages are rendered in.
+    return <Redirect href="/sign-in" />;
+  }
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+        tabBarActiveTintColor: "#ffd33d",
+        headerStyle: {
+          backgroundColor: "#25292e",
+        },
+        headerShadowVisible: false,
+        headerTintColor: "#fff",
+        tabBarStyle: {
+          backgroundColor: "#25292e",
+        },
+        headerRight: () => (
+          <Pressable
+            onPress={() => console.log("Open Menu")}
+            style={{ marginRight: 15 }}
+          >
+            <Ionicons name="menu" size={30} color="#fff" />
+          </Pressable>
+        ),
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          headerTitle: "Home",
+          tabBarLabel: "home",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "home-sharp" : "home-outline"}
+              size={30}
+              color={color}
+            />
+          ),
         }}
-      />
+      ></Tabs.Screen>
       <Tabs.Screen
-        name="explore"
+        name="about"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          headerTitle: "Blog",
+          tabBarLabel: "blog",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "book" : "book-outline"}
+              size={30}
+              color={color}
+            />
+          ),
         }}
-      />
+      ></Tabs.Screen>
+      <Tabs.Screen
+        name="(quiz)"
+        options={{
+          headerTitle: "Quiz",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "school" : "school-outline"}
+              size={30}
+              color={color}
+            />
+          ),
+        }}
+      ></Tabs.Screen>
     </Tabs>
   );
 }

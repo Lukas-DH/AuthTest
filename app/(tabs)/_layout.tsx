@@ -1,21 +1,19 @@
-import { Tabs, Redirect } from "expo-router";
+import { Tabs, Redirect, useRouter } from "expo-router";
 import { useSession } from "@/components/ctx";
-import { Text, Pressable } from "react-native";
+import { useState } from "react";
+import { Text, Pressable, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
-  const { session, isLoading } = useSession();
+  const { session, isLoading, signOut } = useSession();
+  const [menuVisible, setMenuVisible] = useState(false);
+  const router = useRouter();
 
-  // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
-  // Only require authentication within the (app) group's layout as users
-  // need to be able to access the (auth) group and sign in again.
   if (!session) {
-    // On web, static rendering will stop here as the user is not authenticated
-    // in the headless Node process that the pages are rendered in.
     return <Redirect href="/sign-in" />;
   }
 
@@ -23,21 +21,41 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#ffd33d",
-        headerStyle: {
-          backgroundColor: "#25292e",
-        },
+        headerStyle: { backgroundColor: "#25292e" },
         headerShadowVisible: false,
         headerTintColor: "#fff",
-        tabBarStyle: {
-          backgroundColor: "#25292e",
-        },
+        tabBarStyle: { backgroundColor: "#25292e" },
         headerRight: () => (
-          <Pressable
-            onPress={() => console.log("Open Menu")}
-            style={{ marginRight: 15 }}
-          >
-            <Ionicons name="menu" size={30} color="#fff" />
-          </Pressable>
+          <View style={{ marginRight: 15 }}>
+            {/* Burger Icon */}
+            <Pressable onPress={() => setMenuVisible(!menuVisible)}>
+              <Ionicons name="menu" size={30} color="#fff" />
+            </Pressable>
+
+            {/* Dropdown Menu */}
+            {menuVisible && (
+              <View style={styles.menu}>
+                <Pressable
+                  onPress={() => {
+                    setMenuVisible(false);
+                    router.push("/");
+                  }}
+                  style={styles.menuItem}
+                >
+                  <Text style={styles.menuText}>Profile</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    setMenuVisible(false);
+                    signOut();
+                  }}
+                  style={styles.menuItem}
+                >
+                  <Text style={styles.menuText}>Sign Out</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
         ),
       }}
     >
@@ -53,8 +71,9 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          // 🏆 Burger Menu in Header
         }}
-      ></Tabs.Screen>
+      />
       <Tabs.Screen
         name="about"
         options={{
@@ -68,11 +87,12 @@ export default function TabLayout() {
             />
           ),
         }}
-      ></Tabs.Screen>
+      />
       <Tabs.Screen
         name="(quiz)"
         options={{
           headerTitle: "Quiz",
+          tabBarLabel: "quiz",
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "school" : "school-outline"}
@@ -81,7 +101,32 @@ export default function TabLayout() {
             />
           ),
         }}
-      ></Tabs.Screen>
+      />
     </Tabs>
   );
 }
+
+const styles = {
+  menu: {
+    position: "absolute" as "absolute",
+    top: 40,
+    right: 0,
+    backgroundColor: "#25292e",
+    borderRadius: 8,
+    paddingVertical: 10,
+    width: 120,
+    elevation: 5, // Shadow for Android
+    shadowColor: "#000", // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  menuItem: {
+    padding: 10,
+    alignItems: "center" as const,
+  },
+  menuText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+};

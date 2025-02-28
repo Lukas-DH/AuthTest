@@ -18,7 +18,7 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Connection</Text>
+      <Text style={styles.title}>Sign In</Text>
 
       {/* Username Field */}
       <Text style={styles.label}>Username</Text>
@@ -27,10 +27,13 @@ export default function SignIn() {
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
+        placeholderTextColor="#A4D65E"
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      <Text style={styles.link}>Forgot your username?</Text>
+      <Pressable>
+        <Text style={styles.link}>Forgot your username?</Text>
+      </Pressable>
 
       {/* Password Field */}
       <Text style={styles.label}>Password</Text>
@@ -39,16 +42,20 @@ export default function SignIn() {
         value={password}
         onChangeText={setPassword}
         placeholder="Enter your password"
+        placeholderTextColor="#A4D65E"
         secureTextEntry
       />
-      <Text style={styles.link}>Password forgotten?</Text>
+      <Pressable>
+        <Text style={styles.link}>Forgot your password?</Text>
+      </Pressable>
 
       {/* Remember Me Toggle */}
       <View style={styles.rememberContainer}>
         <Switch
           value={rememberMe}
           onValueChange={setRememberMe}
-          thumbColor="#00A99D"
+          thumbColor={rememberMe ? "#00AB8E" : "#CCC"}
+          trackColor={{ false: "#999", true: "#A4D65E" }}
         />
         <Text style={styles.rememberText}>Remember my username</Text>
       </View>
@@ -68,7 +75,7 @@ export default function SignIn() {
         <Text style={styles.buttonText}>CONNECT</Text>
       </Pressable>
 
-      {/* Register & France Connect */}
+      {/* Register & Alternative Login */}
       <Text style={styles.registerText}>
         No account yet?{" "}
         <Link href="/register">
@@ -76,16 +83,17 @@ export default function SignIn() {
         </Link>
       </Text>
       <Text style={styles.or}>OR</Text>
-      <Text style={styles.franceConnect}>Log in with France Connect</Text>
+      <Pressable>
+        <Text style={styles.franceConnect}>Log in with France Connect</Text>
+      </Pressable>
 
       {/* Footer */}
       <Text style={styles.footerText}>
-        Do you have a problem or a question?{" "}
-        <Text style={styles.link}>Contact us</Text>
+        Need help? <Text style={styles.link}>Contact us</Text>
       </Text>
       <Text style={styles.terms}>
-        <Text style={styles.link}>Terms of Use</Text> and{" "}
-        <Text style={styles.link}>Privacy policy</Text>
+        <Text style={styles.link}>Terms of Use</Text> &{" "}
+        <Text style={styles.link}>Privacy Policy</Text>
       </Text>
       <Text style={styles.version}>Version 3.5.3 (3050300)</Text>
     </View>
@@ -95,36 +103,37 @@ export default function SignIn() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F8F8",
+    backgroundColor: "#004F71", // Dark blue background
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "600",
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#A4D65E", // Light green title
     marginBottom: 20,
-    color: "#333",
   },
   label: {
     alignSelf: "flex-start",
     fontSize: 16,
-    color: "#666",
+    color: "#00AB8E", // Teal label color
     marginBottom: 5,
   },
   input: {
     width: "100%",
     height: 45,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
+    borderColor: "#0097A9", // Cyan border
+    borderWidth: 2,
+    borderRadius: 8,
     paddingHorizontal: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFF",
+    color: "#004F71", // Dark blue text
     marginBottom: 10,
   },
   link: {
     fontSize: 14,
-    color: "#00A99D",
+    color: "#A4D65E", // Light green links
     alignSelf: "flex-end",
     marginBottom: 15,
   },
@@ -136,6 +145,7 @@ const styles = StyleSheet.create({
   },
   rememberText: {
     fontSize: 16,
+    color: "#FFF", // White text
     marginLeft: 8,
   },
   button: {
@@ -143,14 +153,14 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 5,
+    borderRadius: 8,
     marginBottom: 15,
   },
   buttonEnabled: {
-    backgroundColor: "#00A99D",
+    backgroundColor: "#00AB8E", // Teal button when active
   },
   buttonDisabled: {
-    backgroundColor: "#CCC",
+    backgroundColor: "#666", // Gray button when disabled
   },
   buttonText: {
     color: "#FFF",
@@ -159,38 +169,38 @@ const styles = StyleSheet.create({
   },
   registerText: {
     fontSize: 14,
-    color: "#666",
+    color: "#FFF", // White text
   },
   registerLink: {
-    color: "#00A99D",
+    color: "#A4D65E",
     fontWeight: "bold",
   },
   or: {
     fontSize: 16,
-    color: "#999",
+    color: "#A4D65E",
     marginVertical: 10,
   },
   franceConnect: {
     fontSize: 16,
-    color: "#00A99D",
+    color: "#A4D65E",
     fontWeight: "bold",
     textDecorationLine: "underline",
     marginBottom: 20,
   },
   footerText: {
     fontSize: 12,
-    color: "#666",
+    color: "#FFF",
     textAlign: "center",
     marginBottom: 5,
   },
   terms: {
     fontSize: 12,
-    color: "#666",
+    color: "#FFF",
     textAlign: "center",
     marginBottom: 15,
   },
   version: {
     fontSize: 12,
-    color: "#AAA",
+    color: "#A4D65E",
   },
 });

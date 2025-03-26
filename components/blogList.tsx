@@ -13,7 +13,7 @@ const BlogList: React.FC = () => {
           title={item.title}
           image={item.image}
           summary={item.summary}
-          likes={item.likes}
+          // likes={item.likes}
           author={item.author}
         />
       )}

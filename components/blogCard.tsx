@@ -12,7 +12,7 @@ interface BlogCardProps {
   title: string;
   image: ImageSourcePropType;
   summary: string;
-  likes: number;
+  // likes: number;
   author: string;
 }
 
@@ -20,7 +20,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
   title,
   image,
   summary,
-  likes,
+  // likes,
   author,
 }) => {
   return (
@@ -30,10 +30,10 @@ const BlogCard: React.FC<BlogCardProps> = ({
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.summary}>{summary}</Text>
         <Text style={styles.author}>By {author}</Text>
-        <View style={styles.footer}>
+        {/* <View style={styles.footer}>
           <FontAwesome name="heart" size={18} color="#A4D65E" />
           <Text style={styles.likes}>{likes}</Text>
-        </View>
+        </View> */}
       </View>
     </View>
   );

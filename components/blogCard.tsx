@@ -16,13 +16,7 @@ interface BlogCardProps {
   author: string;
 }
 
-const BlogCard: React.FC<BlogCardProps> = ({
-  title,
-  image,
-  summary,
-  // likes,
-  author,
-}) => {
+function BlogCard({ title, image, summary, author }: BlogCardProps) {
   return (
     <View style={styles.card}>
       <Image source={image} style={styles.image} />
@@ -37,7 +31,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   card: {

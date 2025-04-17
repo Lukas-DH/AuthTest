@@ -59,6 +59,23 @@ export default function TabLayout() {
         ),
       }}
     >
+      {" "}
+      <Tabs.Screen
+        name="info"
+        options={{
+          headerTitle: "info",
+          tabBarLabel: "info",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={
+                focused ? "information-circle" : "information-circle-outline"
+              }
+              size={30}
+              color={color}
+            />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
@@ -82,20 +99,6 @@ export default function TabLayout() {
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "book" : "book-outline"}
-              size={30}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(quiz)"
-        options={{
-          headerTitle: "Quiz",
-          tabBarLabel: "quiz",
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name={focused ? "school" : "school-outline"}
               size={30}
               color={color}
             />

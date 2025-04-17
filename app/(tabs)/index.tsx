@@ -1,6 +1,5 @@
-import quizData, { QuizQuestion } from "@/data/quizData";
 import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   View,
@@ -13,27 +12,64 @@ import {
 } from "react-native";
 
 export default function QuestionnaireScreen() {
+  interface Question {
+    id: string;
+    advice: string;
+    label: string;
+    type: "text" | "number" | "boolean" | "choice" | "list";
+    unit?: string;
+    choices?: string[];
+    followUp?: Question[];
+    points?: number;
+  }
+
+  const [quizJson, setQuizJson] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isAtRisk, setIsAtRisk] = useState(false);
   const [riskyResponses, setRiskyResponses] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes/`
+          // "https://nice-agreement-f5d7ffb584.strapiapp.com/api/quizzes/gp18g5pglh6ejbf554m0k9o4"
+        );
+        const json = await res.json();
+        // console.log(json);
+        setQuizJson(json.data[0].question);
+      } catch (error) {
+        console.error("Failed to fetch quiz:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuiz();
+  }, []);
 
   const handleAnswerChange = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
 
   const handleSubmit = () => {
-    // 🚨 Dummy Risk Analysis 🚨
-    const risks: string[] = [];
-    if (answers["smoking"] && answers["smoking"] !== "No")
-      risks.push("Smoking");
-    if (answers["alcohol"] && answers["alcohol"] !== "No or exceptional")
-      risks.push("Alcohol");
-    if (answers["weight"] && parseInt(answers["weight"]) > 100)
-      risks.push("Overweight");
+    let score = 0;
 
-    setIsAtRisk(risks.length > 0);
-    setRiskyResponses(risks);
+    if (parseInt(answers["F.19"]) >= 12) score += 1;
+    if (answers["F.20"] && parseInt(answers["F.20"]) >= 35) score += 1;
+    if (answers["F.21"] && answers["F.21"].length > 0) score += 1;
+
+    const isHighRisk = score >= 1;
+    setIsAtRisk(isHighRisk);
+    setRiskyResponses(
+      isHighRisk
+        ? quizJson
+            .filter((q) => Object.keys(answers).includes(q.id))
+            .map((q) => q.advice)
+        : []
+    );
     setIsSubmitted(true);
   };
 
@@ -43,37 +79,53 @@ export default function QuestionnaireScreen() {
     setIsAtRisk(false);
     setRiskyResponses([]);
   };
-
-  const articles: { [key: string]: string } = {
-    Smoking: "https://www.who.int/news-room/fact-sheets/detail/tobacco",
-    Alcohol: "https://www.cdc.gov/alcohol/fact-sheets/alcohol-use.htm",
-    Overweight: "https://www.nhs.uk/live-well/healthy-weight/",
-  };
-
+  console.log(Object.keys(answers));
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {!isSubmitted ? (
+      {loading ? (
+        <Text style={styles.title}>Loading quiz...</Text>
+      ) : !isSubmitted ? (
         <>
           <Text style={styles.title}>Self-Assessment Questionnaire</Text>
 
-          {quizData.map((question: QuizQuestion) => (
+          {quizJson.map((question) => (
             <View key={question.id} style={styles.questionContainer}>
-              <Text style={styles.question}>{question.question}</Text>
+              <Text style={styles.question}>
+                {question.id + " " + question.label}
+              </Text>
 
-              {question.type === "text" || question.type === "date" ? (
+              {question.type === "text" || question.type === "number" ? (
                 <TextInput
                   style={styles.input}
+                  keyboardType={
+                    question.type === "number" ? "numeric" : "default"
+                  }
                   placeholder={
-                    question.type === "date"
-                      ? "dd/mm/yyyy"
-                      : "Enter your answer"
+                    question.unit
+                      ? `en ${question.unit}`
+                      : "Entrez votre réponse"
                   }
                   placeholderTextColor="#A4D65E"
                   onChangeText={(text) => handleAnswerChange(question.id, text)}
                 />
               ) : null}
 
-              {question.type === "multiple-choice" && question.options ? (
+              {question.type === "boolean" ? (
+                <Picker
+                  selectedValue={answers[question.id] || ""}
+                  onValueChange={(value) =>
+                    handleAnswerChange(question.id, value)
+                  }
+                  style={styles.picker}
+                  // mode="dropdown"
+                >
+                  <Picker.Item label="" value="" />
+                  <Picker.Item label="yes" value="yes" />
+                  <Picker.Item label="no" value="no" />
+                </Picker>
+              ) : null}
+
+              {question.type === "choice" && question.choices ? (
                 <Picker
                   selectedValue={answers[question.id] || ""}
                   onValueChange={(value) =>
@@ -81,11 +133,51 @@ export default function QuestionnaireScreen() {
                   }
                   style={styles.picker}
                 >
-                  {question.options.map((option, index) => (
-                    <Picker.Item key={index} label={option} value={option} />
+                  {question.choices.map((choice, index) => (
+                    <Picker.Item key={index} label={choice} value={choice} />
                   ))}
                 </Picker>
               ) : null}
+
+              {question.type === "list" && question.choices ? (
+                <Picker
+                  selectedValue={answers[question.id] || ""}
+                  onValueChange={(value) =>
+                    handleAnswerChange(question.id, value)
+                  }
+                  style={styles.picker}
+                >
+                  {question.choices.map((choice, index) => (
+                    <Picker.Item key={index} label={choice} value={choice} />
+                  ))}
+                </Picker>
+              ) : null}
+
+              {question.followUp &&
+                answers[question.id] === "yes" &&
+                question.followUp.map((subQuestion) => (
+                  <View key={subQuestion.id} style={styles.questionContainer}>
+                    <Text style={styles.question}>{subQuestion.label}</Text>
+                    {subQuestion.type === "text" ||
+                    subQuestion.type === "number" ? (
+                      <TextInput
+                        style={styles.input}
+                        keyboardType={
+                          subQuestion.type === "number" ? "numeric" : "default"
+                        }
+                        placeholder={
+                          subQuestion.unit
+                            ? `en ${subQuestion.unit}`
+                            : "Entrez votre réponse"
+                        }
+                        placeholderTextColor="#A4D65E"
+                        onChangeText={(text) =>
+                          handleAnswerChange(subQuestion.id, text)
+                        }
+                      />
+                    ) : null}
+                  </View>
+                ))}
             </View>
           ))}
 
@@ -113,7 +205,7 @@ export default function QuestionnaireScreen() {
               {riskyResponses.map((risk, index) => (
                 <Pressable
                   key={index}
-                  onPress={() => Linking.openURL(articles[risk])}
+                  // onPress={() => Linking.openURL(articles[risk])}
                   style={({ pressed }) => [
                     styles.riskItem,
                     pressed && styles.riskItemPressed,
@@ -169,7 +261,12 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
-  picker: { backgroundColor: "#0097A9", color: "#FFF", borderRadius: 8 },
+  picker: {
+    fontSize: 18,
+    backgroundColor: "#0097A9",
+    color: "#FFF",
+    borderRadius: 8,
+  },
   riskList: { marginBottom: 20 },
   riskTitle: {
     fontSize: 18,

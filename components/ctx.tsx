@@ -1,13 +1,14 @@
 import { useContext, createContext, type PropsWithChildren } from "react";
 import { useStorageState } from "@/components/useStorageState";
+import { Link, router } from "expo-router";
 
 const AuthContext = createContext<{
-  signIn: () => void;
+  signIn: (identifier: string, password: string) => Promise<void>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
 }>({
-  signIn: () => null,
+  signIn: () => Promise.resolve(),
   signOut: () => null,
   session: null,
   isLoading: false,
@@ -27,13 +28,50 @@ export function useSession() {
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
-
+  console.log("session" + " " + session);
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
-          // Perform sign-in logic here
-          setSession("xxx");
+        signIn: async (identifier, password) => {
+          try {
+            // Replace with your Strapi URL
+            const response = await fetch(
+              "https://pleasant-flame-3da15cee4d.strapiapp.com/api/auth/local",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  identifier, // This can be username or email
+                  password,
+                }),
+              }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              const errorMessage =
+                data?.error?.message ||
+                data?.message ||
+                "Authentication failed. Please try again.";
+              throw new Error(errorMessage);
+            }
+
+            if (data.jwt) {
+              // const { jwt, user } = data;
+              // setSession(JSON.stringify(data));
+              setSession(JSON.stringify(data));
+              router.replace("/");
+            } else {
+              // Handle authentication error
+              throw new Error(data.error?.message || "Authentication failed");
+            }
+          } catch (error) {
+            console.error("Sign-in error:", error);
+            throw error;
+          }
         },
         signOut: () => {
           setSession(null);

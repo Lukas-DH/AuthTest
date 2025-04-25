@@ -36,7 +36,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
           try {
             // Replace with your Strapi URL
             const response = await fetch(
-              "https://pleasant-flame-3da15cee4d.strapiapp.com/api/auth/local",
+              `${process.env.EXPO_PUBLIC_API_URL}/api/auth/local`,
               {
                 method: "POST",
                 headers: {

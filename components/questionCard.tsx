@@ -8,23 +8,25 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-interface OnboardingCardProps {
+interface QuestionCardProps {
   title: string;
   description: string;
   children?: ReactNode;
-  buttonText?: string;
-  onNext?: (event: GestureResponderEvent) => void;
-  buttonDisabled?: boolean;
+  onNext?: () => void;
+  onBack?: () => void;
+  isLastQuestion?: boolean;
+  nextDisabled?: boolean;
 }
 
-export default function OnboardingCard({
+export default function QuestionCard({
   title,
   description,
   children,
-  buttonText = "Next",
   onNext,
-  buttonDisabled = false,
-}: OnboardingCardProps) {
+  onBack,
+  isLastQuestion,
+  nextDisabled,
+}: QuestionCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -33,25 +35,30 @@ export default function OnboardingCard({
       </View>
       <View style={styles.content}>{children}</View>
       {onNext && (
-        <View style={styles.footer}>
-          <Pressable
-            onPress={onNext}
-            disabled={buttonDisabled}
-            style={({ pressed }) => [
-              styles.button,
-              pressed && styles.buttonPressed,
-              buttonDisabled && styles.buttonDisabled,
-            ]}
-          >
-            <Text style={styles.buttonText}>{buttonText}</Text>
-            <Ionicons
-              name="arrow-forward"
-              size={16}
-              color="#FFF"
-              style={styles.icon}
-            />
-          </Pressable>
-        </View>
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            pressed && styles.buttonPressed,
+            nextDisabled && styles.buttonDisabled,
+          ]}
+          onPress={onNext}
+          disabled={nextDisabled}
+        >
+          <Text style={styles.buttonText}>
+            {isLastQuestion ? "Submit" : "Next"}
+          </Text>
+        </Pressable>
+      )}
+      {onBack && (
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={onBack}
+        >
+          <Text style={styles.buttonText}>Back</Text>
+        </Pressable>
       )}
     </View>
   );
@@ -96,6 +103,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
   },
   buttonPressed: {
     backgroundColor: "#047857",

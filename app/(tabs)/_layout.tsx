@@ -2,7 +2,7 @@ import { Tabs, Redirect, useRouter } from "expo-router";
 import { useSession } from "@/components/ctx";
 import { useState } from "react";
 import { Text, Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Foundation } from "@expo/vector-icons";
 
 export default function TabLayout() {
   const { session, isLoading, signOut } = useSession();
@@ -89,6 +89,20 @@ export default function TabLayout() {
             />
           ),
           // 🏆 Burger Menu in Header
+        }}
+      />
+      <Tabs.Screen
+        name="tester"
+        options={{
+          headerTitle: "Results",
+          tabBarLabel: "Results",
+          tabBarIcon: ({ focused, color }) => (
+            <Foundation
+              name={focused ? "results-demographics" : "results-demographics"}
+              size={30}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen

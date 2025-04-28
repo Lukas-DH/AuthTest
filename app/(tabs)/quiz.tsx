@@ -4,7 +4,7 @@ import OnboardingCard from "../../components/onboardingCard";
 import QuestionCard from "@/components/questionCard";
 import ResponseSummary from "@/components/responseSummary";
 import { useSession } from "@/components/ctx";
-
+import { router } from "expo-router";
 import {
   View,
   Text,
@@ -78,6 +78,7 @@ export default function QuestionnaireScreen() {
         : []
     );
     setIsSubmitted(true);
+
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -100,6 +101,7 @@ export default function QuestionnaireScreen() {
     } catch (error) {
       console.error("Failed to submit answers:", error);
     }
+    router.push("/results");
   };
 
   const handleRetake = () => {

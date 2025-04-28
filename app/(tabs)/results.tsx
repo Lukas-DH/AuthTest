@@ -48,7 +48,7 @@ export default function OnboardingScreen() {
           // "https://nice-agreement-f5d7ffb584.strapiapp.com/api/quizzes/gp18g5pglh6ejbf554m0k9o4"
         );
         const json = await res.json();
-        // console.log(json);
+        console.log(json);
         setQuizJson(json.data[0].question);
       } catch (error) {
         console.error("Failed to fetch quiz:", error);
@@ -59,7 +59,7 @@ export default function OnboardingScreen() {
 
     fetchQuiz();
   }, []);
-
+  // console.log(quizJson[0].label);
   return (
     <ScrollView style={styles.container}>
       <ResultsCard
@@ -67,16 +67,16 @@ export default function OnboardingScreen() {
           riskLevel: "high",
           factors: [
             {
-              name: "Example Factor",
-              severity: "high",
-              description: "This is a sample risk factor.",
-              recommendations: [
-                "Follow recommendation 1",
-                "Follow recommendation 2",
-              ],
+              name: quizJson[0]?.label || "...",
+              severity:
+                quizJson[0]?.label === "high" || quizJson[0]?.label === "low"
+                  ? quizJson[0]?.label
+                  : "low",
+              description: quizJson[0]?.advice || "...",
+              // recommendations: ["..."],
             },
           ],
-          advice: ["Stay healthy.", "Avoid stress."],
+          // advice: ["Stay healthy.", "Avoid stress."],
           nextSteps: ["Recheck in 3 months.", "Discuss results with doctor."],
         }}
         assessmentDate={new Date()}

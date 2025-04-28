@@ -9,9 +9,9 @@ interface AssessmentResult {
     name: string;
     severity: "low" | "high" | "high";
     description: string;
-    recommendations: string[];
+    // recommendations: string[];
   }[];
-  advice: string[];
+  // advice: string[];
   nextSteps: string[];
 }
 
@@ -68,7 +68,7 @@ export function ResultsCard({
               </Text>
             </View>
             <Text style={styles.factorDescription}>{factor.description}</Text>
-            {factor.recommendations.length > 0 && (
+            {/* {factor.recommendations.length > 0 && (
               <View>
                 <Text style={styles.recommendationTitle}>Recommendations:</Text>
                 {factor.recommendations.map((rec, i) => (
@@ -77,12 +77,12 @@ export function ResultsCard({
                   </Text>
                 ))}
               </View>
-            )}
+            )} */}
           </View>
         ))}
       </View>
 
-      <View style={styles.section}>
+      {/* <View style={styles.section}>
         <Text style={styles.sectionTitle}>
           <Ionicons name="information-circle" size={18} color="#047857" />{" "}
           Personalized Advice
@@ -92,7 +92,7 @@ export function ResultsCard({
             • {advice}
           </Text>
         ))}
-      </View>
+      </View> */}
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
@@ -133,6 +133,30 @@ export function ResultsCard({
           </Pressable>
         </View>
       )}
+
+      {/* Download Results Button */}
+      <View style={styles.footer}>
+        <Pressable
+          onPress={() => {
+            // Handle the download action
+            console.log("Download initiated");
+          }}
+          style={({ pressed }) => [
+            styles.downloadButton,
+            pressed && styles.downloadButtonPressed,
+          ]}
+        >
+          <Ionicons
+            name="download-outline"
+            size={16}
+            color="#FFF"
+            style={styles.icon}
+          />
+          <Text style={styles.buttonText}>Download Results</Text>
+        </Pressable>
+      </View>
+
+      {"..."}
     </ScrollView>
   );
 }
@@ -224,5 +248,17 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 8,
+  },
+  downloadButton: {
+    backgroundColor: "#3b82f6",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  downloadButtonPressed: {
+    backgroundColor: "#2563eb",
   },
 });

@@ -1,25 +1,26 @@
 import React from "react";
-import { SafeAreaView, Text, StyleSheet } from "react-native";
+import { ScrollView, Text, StyleSheet } from "react-native";
 import BlogList from "@/components/blogList";
 
 const BlogScreen: React.FC = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Fertility Blog</Text>
       <BlogList />
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#004F71",
+    backgroundColor: "#f8fafc",
+    alignItems: "center",
   },
   header: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    color: "#A4D65E",
+    color: "#064e3b",
     textAlign: "center",
     marginVertical: 20,
   },

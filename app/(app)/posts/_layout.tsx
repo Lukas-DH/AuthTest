@@ -1,11 +1,14 @@
-import { Text } from "react-native";
-import { Redirect, Stack } from "expo-router";
+import { Text, Pressable } from "react-native";
+import { Redirect, Stack, Link } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 import { useSession } from "@/components/ctx";
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
+
+  const { documentId } = useLocalSearchParams<{ documentId: string }>();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
@@ -23,7 +26,30 @@ export default function AppLayout() {
   // This layout can be deferred because it's not the root layout.
   return (
     // <StatusBar style="light">
-    <Stack></Stack>
-    // </StatusBar>
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: "#25292e" },
+        headerShadowVisible: false,
+        headerShown: false,
+        headerTintColor: "#fff",
+        headerRight: () => (
+          <Link href="/blog" asChild>
+            <Pressable style={{ paddingHorizontal: 10 }}>
+              <Text style={{ color: "#fff" }}>← Back</Text>
+            </Pressable>
+          </Link>
+        ),
+      }}
+    >
+      {/* Document-specific screen */}
+      <Stack.Screen
+        name="[documentId]"
+        options={{
+          title: "Blog",
+          headerTitleStyle: { color: "#fff" },
+          headerShown: true,
+        }}
+      />
+    </Stack>
   );
 }

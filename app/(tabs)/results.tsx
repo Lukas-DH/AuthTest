@@ -31,6 +31,7 @@ export default function OnboardingScreen() {
     choices?: string[];
     followUp?: Question[];
     points?: number;
+    topic?: string; // Added topic property
   }
 
   const [quizJson, setQuizJson] = useState<Question[]>([]);
@@ -67,7 +68,7 @@ export default function OnboardingScreen() {
           riskLevel: "high",
           factors: [
             {
-              name: quizJson[0]?.label || "...",
+              name: quizJson[0]?.topic || "...",
               severity:
                 quizJson[0]?.label === "high" || quizJson[0]?.label === "low"
                   ? quizJson[0]?.label

@@ -104,7 +104,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="about"
+        name="blog"
         options={{
           headerTitle: "Blog",
           tabBarLabel: "blog",

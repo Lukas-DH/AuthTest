@@ -1,3 +1,4 @@
+import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
 import { useState, useEffect } from "react";
 import OnboardingCard from "../../components/onboardingCard";
@@ -182,15 +183,10 @@ export default function QuestionnaireScreen() {
                 >
                   <Text style={styles.question}>{currentQuestion.label}</Text>
 
-                  {(currentQuestion.type === "text" ||
-                    currentQuestion.type === "number") && (
+                  {currentQuestion.type === "text" && (
                     <TextInput
                       style={styles.input}
-                      keyboardType={
-                        currentQuestion.type === "number"
-                          ? "numeric"
-                          : "default"
-                      }
+                      keyboardType="default"
                       placeholder={
                         currentQuestion.unit
                           ? `en ${currentQuestion.unit}`
@@ -202,6 +198,30 @@ export default function QuestionnaireScreen() {
                       }
                       value={answers[currentQuestion.id] || ""}
                     />
+                  )}
+
+                  {currentQuestion.type === "number" && (
+                    <>
+                      <Slider
+                        value={Number(answers[currentQuestion.id]) || 0}
+                        onValueChange={(value) =>
+                          handleAnswerChange(
+                            currentQuestion.id,
+                            String(Math.round(value))
+                          )
+                        }
+                        minimumValue={0}
+                        maximumValue={100}
+                        step={1}
+                        minimumTrackTintColor="#A4D65E"
+                        maximumTrackTintColor="#0097A9"
+                        thumbTintColor="#059669"
+                      />
+                      <Text style={{ textAlign: "center", marginTop: 10 }}>
+                        {answers[currentQuestion.id] || 0}{" "}
+                        {currentQuestion.unit ? currentQuestion.unit : ""}
+                      </Text>
+                    </>
                   )}
 
                   {currentQuestion.type === "boolean" && (
@@ -246,20 +266,35 @@ export default function QuestionnaireScreen() {
                         style={styles.questionContainer}
                       >
                         <Text style={styles.question}>{subQuestion.label}</Text>
-                        {(subQuestion.type === "text" ||
-                          subQuestion.type === "number") && (
+                        {subQuestion.type === "number" ? (
+                          <>
+                            <Slider
+                              value={Number(answers[subQuestion.id]) || 0}
+                              onValueChange={(value) =>
+                                handleAnswerChange(
+                                  subQuestion.id,
+                                  String(Math.round(value))
+                                )
+                              }
+                              minimumValue={0}
+                              maximumValue={100}
+                              step={1}
+                              minimumTrackTintColor="#A4D65E"
+                              maximumTrackTintColor="#0097A9"
+                              thumbTintColor="#059669"
+                            />
+                            <Text
+                              style={{ textAlign: "center", marginTop: 10 }}
+                            >
+                              {answers[subQuestion.id] || 0}{" "}
+                              {subQuestion.unit ? subQuestion.unit : ""}
+                            </Text>
+                          </>
+                        ) : (
                           <TextInput
                             style={styles.input}
-                            keyboardType={
-                              subQuestion.type === "number"
-                                ? "numeric"
-                                : "default"
-                            }
-                            placeholder={
-                              subQuestion.unit
-                                ? `en ${subQuestion.unit}`
-                                : "Entrez votre réponse"
-                            }
+                            keyboardType="default"
+                            placeholder="Entrez votre réponse"
                             placeholderTextColor="#A4D65E"
                             onChangeText={(text) =>
                               handleAnswerChange(subQuestion.id, text)

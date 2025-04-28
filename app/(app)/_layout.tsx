@@ -23,7 +23,14 @@ export default function AppLayout() {
   // This layout can be deferred because it's not the root layout.
   return (
     // <StatusBar style="light">
-    <Stack></Stack>
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: "#25292e" },
+        headerShadowVisible: false,
+        headerShown: false,
+        headerTintColor: "#fff",
+      }}
+    ></Stack>
     // </StatusBar>
   );
 }

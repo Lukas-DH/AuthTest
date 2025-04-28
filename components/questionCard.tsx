@@ -7,10 +7,12 @@ import {
   GestureResponderEvent,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Slider from "@react-native-community/slider";
 
 interface QuestionCardProps {
   title: string;
   description: string;
+  sex?: string;
   children?: ReactNode;
   onNext?: () => void;
   onBack?: () => void;
@@ -24,16 +26,32 @@ export default function QuestionCard({
   children,
   onNext,
   onBack,
+  sex,
   isLastQuestion,
   nextDisabled,
 }: QuestionCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.title}>
+          {title}
+          <Text style={styles.description}>
+            {description}
+            {"\n"}
+          </Text>
+        </Text>
       </View>
+      <Text
+        style={[
+          styles.badge,
+          sex === "male" && { backgroundColor: "#dbeafe" }, // light blue
+          sex === "female" && { backgroundColor: "#fce7f3" }, // light pink
+        ]}
+      >
+        {sex}
+      </Text>
       <View style={styles.content}>{children}</View>
+
       {onNext && (
         <Pressable
           style={({ pressed }) => [
@@ -119,5 +137,15 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 8,
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    fontSize: 12,
+    fontWeight: "500",
+    overflow: "hidden",
+    marginTop: 4,
   },
 });

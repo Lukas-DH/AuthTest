@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ export default function OnboardingCard({
   onNext,
   buttonDisabled = false,
 }: OnboardingCardProps) {
+  const [isChecked, setIsChecked] = useState(false);
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -32,15 +33,56 @@ export default function OnboardingCard({
         <Text style={styles.description}>{description}</Text>
       </View>
       <View style={styles.content}>{children}</View>
+      {/* Custom Checkbox Row */}
+      <View style={styles.checkboxRow}>
+        <Pressable
+          onPress={() => setIsChecked(!isChecked)}
+          style={{
+            height: 24,
+            width: 24,
+            borderWidth: 1,
+            borderColor: "#64748b",
+            marginRight: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: isChecked ? "#059669" : "#fff",
+          }}
+        >
+          {isChecked && (
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>✓</Text>
+          )}
+        </Pressable>
+        <Text style={{ fontSize: 14, color: "#475569" }}>
+          Both the{" "}
+          <Text
+            style={[
+              styles.badge,
+              { backgroundColor: "#EAF2FB", color: "#065f46" },
+            ]}
+          >
+            male
+          </Text>{" "}
+          and{" "}
+          <Text
+            style={[
+              styles.badge,
+              { backgroundColor: "#F3E3F9", color: "#065f46" },
+            ]}
+          >
+            female
+          </Text>{" "}
+          partner must be present to complete their portion of the assessment.
+        </Text>
+      </View>
       {onNext && (
         <View style={styles.footer}>
           <Pressable
             onPress={onNext}
-            disabled={buttonDisabled}
+            disabled={buttonDisabled || !isChecked}
             style={({ pressed }) => [
               styles.button,
               pressed && styles.buttonPressed,
-              buttonDisabled && styles.buttonDisabled,
+              (buttonDisabled || !isChecked) && styles.buttonDisabled,
             ]}
           >
             <Text style={styles.buttonText}>{buttonText}</Text>
@@ -84,6 +126,11 @@ const styles = StyleSheet.create({
   content: {
     marginVertical: 10,
   },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
   footer: {
     flexDirection: "row",
     justifyContent: "flex-end",
@@ -110,5 +157,15 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 8,
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    fontSize: 12,
+    fontWeight: "500",
+    overflow: "hidden",
+    marginTop: 4,
   },
 });

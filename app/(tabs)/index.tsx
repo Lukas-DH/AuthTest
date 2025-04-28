@@ -1,328 +1,108 @@
-import { Picker } from "@react-native-picker/picker";
-import { useState, useEffect } from "react";
-import OnboardingCard from "../../components/onboardingCard";
-import QuestionCard from "@/components/questionCard";
-import { useSession } from "@/components/ctx";
+import React, { useState } from "react";
+import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
 
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  Pressable,
-  StyleSheet,
-  Linking,
-} from "react-native";
-
-export default function QuestionnaireScreen() {
-  interface Question {
-    id: string;
-    advice: string;
-    topic: string;
-    label: string;
-    type: "text" | "number" | "boolean" | "choice" | "list";
-    unit?: string;
-    choices?: string[];
-    followUp?: Question[];
-    points?: number;
-  }
-
-  const [quizJson, setQuizJson] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isAtRisk, setIsAtRisk] = useState(false);
-  const [riskyResponses, setRiskyResponses] = useState<string[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [showOnboarding, setShowOnboarding] = useState(true);
-  const { session, isLoading } = useSession();
-
-  useEffect(() => {
-    const fetchQuiz = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes/`
-        );
-        const json = await res.json();
-        setQuizJson(json.data[0].question);
-      } catch (error) {
-        console.error("Failed to fetch quiz:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchQuiz();
-  }, []);
-
-  const handleAnswerChange = (questionId: string, answer: string) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
-  };
-
-  const handleSubmit = async () => {
-    let score = 0;
-
-    if (parseInt(answers["F.19"]) >= 12) score += 1;
-    if (answers["F.20"] && parseInt(answers["F.20"]) >= 35) score += 1;
-    if (answers["F.21"] && answers["F.21"].length > 0) score += 1;
-
-    const isHighRisk = score >= 1;
-    setIsAtRisk(isHighRisk);
-    setRiskyResponses(
-      isHighRisk
-        ? quizJson
-            .filter((q) => Object.keys(answers).includes(q.id))
-            .map((q) => q.advice)
-        : []
-    );
-    setIsSubmitted(true);
-    try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON.stringify({
-        data: {
-          response: answers,
-          users_permissions_user: {
-            connect: [{ id: "1" }],
-          },
-        },
-      });
-
-      await fetch("http://localhost:1337/api/xresponses", {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      });
-    } catch (error) {
-      console.error("Failed to submit answers:", error);
-    }
-  };
-
-  const handleRetake = () => {
-    setShowOnboarding(true);
-    setAnswers({});
-    setIsSubmitted(false);
-    setIsAtRisk(false);
-    setRiskyResponses([]);
-    setCurrentQuestionIndex(0);
-  };
-
-  const currentQuestion = quizJson[currentQuestionIndex];
-  const isCurrentAnswerEmpty = !answers[currentQuestion?.id];
-  console.log(answers);
-  console.log(session ? JSON.parse(session).user.username : null);
-  // const { jwt } = session ? JSON.parse(session) : { jwt: null };
+export default function InfoScreen() {
+  const router = useRouter();
+  const [consentChecked, setConsentChecked] = useState(false);
 
   return (
-    <>
-      {showOnboarding ? (
-        <ScrollView contentContainerStyle={styles.container}>
-          <OnboardingCard
-            title="Bienvenue"
-            description="Répondez à quelques questions pour recevoir un conseil personnalisé."
-            buttonText="Commencer"
-            onNext={() => setShowOnboarding(false)}
-          >
-            <Text style={styles.extraInfo}>
-              The assessment will take approximately 10–15 minutes to complete
-              and includes questions about:{"\n\n"}• Basic health information
-              {"\n"}• Lifestyle factors{"\n"}• Medical history{"\n"}•
-              Reproductive health
-              {"\n\n"}
-              You can complete this assessment for yourself or together with
-              your partner.{"\n\n"}
-              Remember, you can return in 3 months to track your progress and
-              see how changes you've made have impacted your fertility health.
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Predict-F</Text>
+        <Text style={styles.subtitle}>
+          Early detection and risk assessment for fertility health
+        </Text>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>About This Clinical Trial</Text>
+          <View style={styles.textGroup}>
+            <Text style={styles.paragraph}>
+              Welcome to the Fertility Companion clinical trial. This
+              application aims to:
             </Text>
-          </OnboardingCard>
-        </ScrollView>
-      ) : (
-        <ScrollView contentContainerStyle={styles.container}>
-          {loading ? (
-            <Text style={styles.title}>Loading quiz...</Text>
-          ) : !isSubmitted ? (
-            <>
-              <Text style={styles.title}>Self-Assessment Questionnaire</Text>
-
-              {currentQuestion && (
-                <QuestionCard
-                  title={currentQuestion.id + " " + currentQuestion.topic}
-                  description={
-                    "Question " +
-                    (currentQuestionIndex + 1) +
-                    " of " +
-                    quizJson.length
-                  }
-                  onNext={async () => {
-                    if (currentQuestionIndex < quizJson.length - 1) {
-                      setCurrentQuestionIndex(currentQuestionIndex + 1);
-                    } else {
-                      await handleSubmit();
-                    }
-                  }}
-                  onBack={
-                    currentQuestionIndex > 0
-                      ? () => setCurrentQuestionIndex(currentQuestionIndex - 1)
-                      : undefined
-                  }
-                  isLastQuestion={currentQuestionIndex === quizJson.length - 1}
-                  nextDisabled={isCurrentAnswerEmpty}
-                >
-                  <Text style={styles.question}>{currentQuestion.label}</Text>
-
-                  {(currentQuestion.type === "text" ||
-                    currentQuestion.type === "number") && (
-                    <TextInput
-                      style={styles.input}
-                      keyboardType={
-                        currentQuestion.type === "number"
-                          ? "numeric"
-                          : "default"
-                      }
-                      placeholder={
-                        currentQuestion.unit
-                          ? `en ${currentQuestion.unit}`
-                          : "Entrez votre réponse"
-                      }
-                      placeholderTextColor="#A4D65E"
-                      onChangeText={(text) =>
-                        handleAnswerChange(currentQuestion.id, text)
-                      }
-                      value={answers[currentQuestion.id] || ""}
-                    />
-                  )}
-
-                  {currentQuestion.type === "boolean" && (
-                    <Picker
-                      selectedValue={answers[currentQuestion.id] || ""}
-                      onValueChange={(value) =>
-                        handleAnswerChange(currentQuestion.id, value)
-                      }
-                      style={styles.picker}
-                    >
-                      <Picker.Item label="" value="" />
-                      <Picker.Item label="yes" value="yes" />
-                      <Picker.Item label="no" value="no" />
-                    </Picker>
-                  )}
-
-                  {(currentQuestion.type === "choice" ||
-                    currentQuestion.type === "list") &&
-                    currentQuestion.choices && (
-                      <Picker
-                        selectedValue={answers[currentQuestion.id] || ""}
-                        onValueChange={(value) =>
-                          handleAnswerChange(currentQuestion.id, value)
-                        }
-                        style={styles.picker}
-                      >
-                        {currentQuestion.choices.map((choice, index) => (
-                          <Picker.Item
-                            key={index}
-                            label={choice}
-                            value={choice}
-                          />
-                        ))}
-                      </Picker>
-                    )}
-
-                  {currentQuestion.followUp &&
-                    answers[currentQuestion.id] === "yes" &&
-                    currentQuestion.followUp.map((subQuestion) => (
-                      <View
-                        key={subQuestion.id}
-                        style={styles.questionContainer}
-                      >
-                        <Text style={styles.question}>{subQuestion.label}</Text>
-                        {(subQuestion.type === "text" ||
-                          subQuestion.type === "number") && (
-                          <TextInput
-                            style={styles.input}
-                            keyboardType={
-                              subQuestion.type === "number"
-                                ? "numeric"
-                                : "default"
-                            }
-                            placeholder={
-                              subQuestion.unit
-                                ? `en ${subQuestion.unit}`
-                                : "Entrez votre réponse"
-                            }
-                            placeholderTextColor="#A4D65E"
-                            onChangeText={(text) =>
-                              handleAnswerChange(subQuestion.id, text)
-                            }
-                            value={answers[subQuestion.id] || ""}
-                          />
-                        )}
-                      </View>
-                    ))}
-                </QuestionCard>
-              )}
-
-              <Pressable
-                style={({ pressed }) => [
-                  styles.button,
-                  pressed && styles.buttonPressed,
-                ]}
-                onPress={handleRetake}
-              >
-                <Text style={styles.buttonText}>Restart</Text>
-              </Pressable>
-            </>
-          ) : (
-            <>
-              <Text
-                style={[
-                  styles.title,
-                  isAtRisk ? styles.atRisk : styles.lowRisk,
-                ]}
-              >
-                {isAtRisk ? "At Risk" : "Low Risk"}
+            <View style={styles.list}>
+              <Text style={styles.listItem}>
+                • Identify early signs of potential fertility issues
               </Text>
+              <Text style={styles.listItem}>
+                • Assess key risk factors that may affect fertility
+              </Text>
+              <Text style={styles.listItem}>
+                • Provide personalized recommendations based on your responses
+              </Text>
+              <Text style={styles.listItem}>
+                • Track progress over time with follow-up assessments
+              </Text>
+            </View>
+            <Text style={styles.paragraph}>
+              Your participation involves completing a comprehensive
+              questionnaire about your health, lifestyle, and reproductive
+              history. The assessment takes approximately 10–15 minutes.
+            </Text>
+            <Text style={styles.note}>
+              Note: This application is part of a clinical trial and should not
+              replace professional medical advice. Please consult with a
+              healthcare provider for any concerns about your fertility.
+            </Text>
+          </View>
+        </View>
 
-              {riskyResponses.length > 0 ? (
-                <View style={styles.riskList}>
-                  <Text style={styles.riskTitle}>Risk Factors Identified:</Text>
-                  {riskyResponses.map((risk, index) => (
-                    <Pressable
-                      key={index}
-                      style={({ pressed }) => [
-                        styles.riskItem,
-                        pressed && styles.riskItemPressed,
-                      ]}
-                    >
-                      <Text style={styles.riskText}>{risk} - Learn More</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              ) : (
-                <Text style={styles.noRiskText}>
-                  No major risk factors detected. Keep up your healthy habits!
-                </Text>
+        <View style={styles.buttonGroup}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 12,
+            }}
+          >
+            <Pressable
+              onPress={() => setConsentChecked(!consentChecked)}
+              style={{
+                height: 24,
+                width: 24,
+                borderWidth: 1,
+                borderColor: "#64748b",
+                marginRight: 8,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: consentChecked ? "#059669" : "#fff",
+              }}
+            >
+              {consentChecked && (
+                <Text style={{ color: "#fff", fontWeight: "bold" }}>✓</Text>
               )}
+            </Pressable>
+            <Text style={{ fontSize: 14, color: "#334155" }}>
+              I have read and understand the limitations of this study.
+            </Text>
+          </View>
+          <Pressable
+            style={({ pressed }) => [
+              styles.buttonPrimary,
+              pressed && styles.buttonPrimaryPressed,
+              !consentChecked && { opacity: 0.5 },
+            ]}
+            onPress={() => router.push("/quiz")}
+            disabled={!consentChecked}
+          >
+            <Text style={styles.buttonText}>Start Assessment</Text>
+          </Pressable>
+        </View>
 
-              <Pressable
-                style={({ pressed }) => [
-                  styles.button,
-                  pressed && styles.buttonPressed,
-                ]}
-                onPress={handleRetake}
-              >
-                <Text style={styles.buttonText}>Retake Questionnaire</Text>
-              </Pressable>
-            </>
-          )}
-        </ScrollView>
-      )}
-    </>
+        <Text style={styles.consent}>
+          By continuing, you agree to participate in this clinical trial and
+          consent to the collection and analysis of your data for research
+          purposes.
+        </Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 20, backgroundColor: "#f8fafc" },
+  container: { padding: 20, backgroundColor: "#f8fafc", flexGrow: 1 },
+  content: { maxWidth: 600, width: "100%", alignSelf: "center" },
   title: {
     fontSize: 26,
     fontWeight: "bold",
@@ -330,69 +110,62 @@ const styles = StyleSheet.create({
     color: "#064e3b",
     marginBottom: 10,
   },
-  atRisk: { color: "#FF4F4F" },
-  lowRisk: { color: "#A4D65E" },
-  questionContainer: { marginBottom: 15 },
-  question: {
+  subtitle: {
     fontSize: 18,
+    textAlign: "center",
     color: "#475569",
     marginBottom: 20,
   },
-  input: {
-    borderWidth: 2,
-    borderColor: "#0097A9",
-    backgroundColor: "#FFF",
-    padding: 12,
-    borderRadius: 8,
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 24,
+    borderColor: "#e2e8f0",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 3,
   },
-  picker: {
-    fontSize: 18,
-    backgroundColor: "#0097A9",
-    color: "#FFF",
-    borderRadius: 8,
-  },
-  riskList: { marginBottom: 20 },
-  riskTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#00AB8E",
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#047857",
     marginBottom: 10,
   },
-  riskItem: {
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: "#0097A9",
-    marginBottom: 5,
+  textGroup: { gap: 10 },
+  paragraph: { fontSize: 16, color: "#334155" },
+  list: { marginTop: 10, marginBottom: 10 },
+  listItem: { fontSize: 16, color: "#334155", marginLeft: 10 },
+  note: {
+    fontSize: 14,
+    color: "#64748b",
+    fontStyle: "italic",
+    marginTop: 10,
   },
-  riskItemPressed: { backgroundColor: "#00AB8E" },
-  riskText: { color: "#FFF", textAlign: "center" },
-  noRiskText: {
-    fontSize: 16,
-    color: "#A4D65E",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  button: {
+  buttonGroup: { gap: 12 },
+  buttonPrimary: {
     backgroundColor: "#059669",
     padding: 16,
     borderRadius: 8,
-    flexDirection: "row",
     alignItems: "center",
-    alignSelf: "center",
+  },
+  buttonPrimaryPressed: { backgroundColor: "#047857" },
+  buttonText: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  buttonOutline: {
+    borderWidth: 1,
+    borderColor: "#059669",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonOutlinePressed: { backgroundColor: "#f0fdf4" },
+  buttonOutlineText: { color: "#059669", fontSize: 18, fontWeight: "600" },
+  consent: {
+    fontSize: 12,
+    color: "#64748b",
     marginTop: 20,
-  },
-  buttonPressed: {
-    backgroundColor: "#047857",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  extraInfo: {
-    fontSize: 13,
-    color: "#334155",
-    marginTop: 10,
-    lineHeight: 20,
+    textAlign: "center",
   },
 });

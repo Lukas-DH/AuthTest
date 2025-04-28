@@ -2,7 +2,7 @@ import { Tabs, Redirect, useRouter } from "expo-router";
 import { useSession } from "@/components/ctx";
 import { useState } from "react";
 import { Text, Pressable, View } from "react-native";
-import { Ionicons, Foundation } from "@expo/vector-icons";
+import { Ionicons, Foundation, MaterialIcons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   const { session, isLoading, signOut } = useSession();
@@ -61,22 +61,6 @@ export default function TabLayout() {
     >
       {" "}
       <Tabs.Screen
-        name="info"
-        options={{
-          headerTitle: "info",
-          tabBarLabel: "info",
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name={
-                focused ? "information-circle" : "information-circle-outline"
-              }
-              size={30}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="index"
         options={{
           headerTitle: "Home",
@@ -92,7 +76,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="tester"
+        name="quiz"
+        options={{
+          headerTitle: "quiz",
+          tabBarLabel: "quiz",
+          tabBarIcon: ({ focused, color }) => (
+            <MaterialIcons
+              name={focused ? "quiz" : "quiz"}
+              size={30}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="results"
         options={{
           headerTitle: "Results",
           tabBarLabel: "Results",

@@ -4,10 +4,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 // Define the AssessmentResult interface
 interface AssessmentResult {
-  riskLevel: "low" | "high" | "high";
+  riskLevel: "faible" | "élevé" | "élevé";
   factors: {
     name: string;
-    severity: "low" | "high" | "high";
+    severity: "faible" | "élevé" | "élevé";
     description: string;
     // recommendations: string[];
   }[];
@@ -28,13 +28,13 @@ export function ResultsCard({
   nextAssessmentDate,
   onScheduleReminder,
 }: ResultsCardProps) {
-  const getBadgeStyle = (level: "low" | "moderate" | "high") => {
+  const getBadgeStyle = (level: "faible" | "moderate" | "élevé") => {
     switch (level) {
-      case "low":
+      case "faible":
         return [styles.badge, { backgroundColor: "#d1fae5", color: "#065f46" }];
       case "moderate":
         return [styles.badge, { backgroundColor: "#fef3c7", color: "#92400e" }];
-      case "high":
+      case "élevé":
         return [styles.badge, { backgroundColor: "#fee2e2", color: "#991b1b" }];
       default:
         return styles.badge;

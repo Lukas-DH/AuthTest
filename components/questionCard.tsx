@@ -63,7 +63,7 @@ export default function QuestionCard({
           disabled={nextDisabled}
         >
           <Text style={styles.buttonText}>
-            {isLastQuestion ? "Submit" : "Next"}
+            {isLastQuestion ? "Soumettre" : "Suivant"}
           </Text>
         </Pressable>
       )}
@@ -75,7 +75,7 @@ export default function QuestionCard({
           ]}
           onPress={onBack}
         >
-          <Text style={styles.buttonText}>Back</Text>
+          <Text style={styles.buttonText}>Retour</Text>
         </Pressable>
       )}
     </View>

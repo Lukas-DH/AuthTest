@@ -12,7 +12,7 @@ export default function AppLayout() {
 
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <Text>Chargement...</Text>;
   }
 
   // Only require authentication within the (app) group's layout as users
@@ -35,7 +35,7 @@ export default function AppLayout() {
         headerRight: () => (
           <Link href="/blog" asChild>
             <Pressable style={{ paddingHorizontal: 10 }}>
-              <Text style={{ color: "#fff" }}>← Back</Text>
+              <Text style={{ color: "#fff" }}>← Retour</Text>
             </Pressable>
           </Link>
         ),

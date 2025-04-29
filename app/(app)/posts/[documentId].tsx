@@ -39,7 +39,7 @@ export default function BlogDetail() {
     <ScrollView contentContainerStyle={{ padding: 16 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold" }}>{post.title}</Text>
       <Text style={{ marginVertical: 10, fontStyle: "italic" }}>
-        by {post.author}
+        par {post.author}
       </Text>
       {/* <Image
         source={{ uri: post.image?.url }}

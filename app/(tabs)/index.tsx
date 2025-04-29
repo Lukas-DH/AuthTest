@@ -11,39 +11,37 @@ export default function InfoScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Predict-F</Text>
         <Text style={styles.subtitle}>
-          Early detection and risk assessment for fertility health
+          Détection précoce et évaluation des risques de fertilité
         </Text>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>About This Clinical Trial</Text>
+          <Text style={styles.cardTitle}>À propos de l'étude</Text>
           <View style={styles.textGroup}>
             <Text style={styles.paragraph}>
-              Welcome to the Fertility Companion clinical trial. This
-              application aims to:
+              Bienvenue à l'étude Fertility Companion. Cette application vise à
+              :
             </Text>
             <View style={styles.list}>
               <Text style={styles.listItem}>
-                • Identify early signs of potential fertility issues
+                • Détecter les premiers signes de problèmes de fertilité
               </Text>
               <Text style={styles.listItem}>
-                • Assess key risk factors that may affect fertility
+                • Évaluer les principaux facteurs de risque
               </Text>
               <Text style={styles.listItem}>
-                • Provide personalized recommendations based on your responses
+                • Offrir des conseils personnalisés
               </Text>
               <Text style={styles.listItem}>
-                • Track progress over time with follow-up assessments
+                • Suivre l'évolution au fil du temps
               </Text>
             </View>
             <Text style={styles.paragraph}>
-              Your participation involves completing a comprehensive
-              questionnaire about your health, lifestyle, and reproductive
-              history. The assessment takes approximately 10–15 minutes.
+              Veuillez répondre à un questionnaire sur votre santé, mode de vie
+              et historique de fertilité (10–15 min).
             </Text>
             <Text style={styles.note}>
-              Note: This application is part of a clinical trial and should not
-              replace professional medical advice. Please consult with a
-              healthcare provider for any concerns about your fertility.
+              Remarque : cette application ne remplace pas un avis médical.
+              Consultez un professionnel en cas de doute.
             </Text>
           </View>
         </View>
@@ -74,7 +72,7 @@ export default function InfoScreen() {
               )}
             </Pressable>
             <Text style={{ fontSize: 14, color: "#334155" }}>
-              I have read and understand the limitations of this study.
+              J'ai lu et compris les limites de cette étude.
             </Text>
           </View>
           <Pressable
@@ -86,14 +84,13 @@ export default function InfoScreen() {
             onPress={() => router.push("/quiz")}
             disabled={!consentChecked}
           >
-            <Text style={styles.buttonText}>Start Assessment</Text>
+            <Text style={styles.buttonText}>Commencer l'évaluation</Text>
           </Pressable>
         </View>
 
         <Text style={styles.consent}>
-          By continuing, you agree to participate in this clinical trial and
-          consent to the collection and analysis of your data for research
-          purposes.
+          En continuant, vous acceptez la collecte et l'analyse de vos données
+          pour cette étude.
         </Text>
       </View>
     </ScrollView>

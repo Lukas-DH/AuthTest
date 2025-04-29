@@ -18,8 +18,8 @@ import {
 
 export default function OnboardingScreen() {
   const handleNext = () => {
-    Alert.alert("Next button pressed!");
-    // Or use console.log("Next button pressed!");
+    Alert.alert("Bouton suivant appuyé !");
+    // Or use console.log("Bouton suivant appuyé !");
   };
 
   interface Question {
@@ -65,23 +65,28 @@ export default function OnboardingScreen() {
     <ScrollView style={styles.container}>
       <ResultsCard
         result={{
-          riskLevel: "high",
+          riskLevel: "élevé",
           factors: [
             {
               name: quizJson[0]?.topic || "...",
               severity:
-                quizJson[0]?.label === "high" || quizJson[0]?.label === "low"
-                  ? quizJson[0]?.label
-                  : "low",
+                quizJson[0]?.label === "élevé" || quizJson[0]?.label === "low"
+                  ? quizJson[0]?.label === "élevé"
+                    ? "élevé"
+                    : "faible"
+                  : "faible",
               description: quizJson[0]?.advice || "...",
               // recommendations: ["..."],
             },
           ],
           // advice: ["Stay healthy.", "Avoid stress."],
-          nextSteps: ["Recheck in 3 months.", "Discuss results with doctor."],
+          nextSteps: [
+            "Revérifiez dans 3 mois.",
+            "Discutez des résultats avec le médecin.",
+          ],
         }}
         assessmentDate={new Date()}
-        onScheduleReminder={() => Alert.alert("Schedule reminder pressed")}
+        onScheduleReminder={() => Alert.alert("Rappel planifié appuyé")}
       />
     </ScrollView>
   );

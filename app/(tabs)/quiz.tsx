@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import OnboardingCard from "../../components/onboardingCard";
 import QuestionCard from "@/components/questionCard";
 import ResponseSummary from "@/components/responseSummary";
+import ChangeSexCard from "@/components/ChangeSex";
 import { useSession } from "@/components/ctx";
 import { router } from "expo-router";
 import {
@@ -131,116 +132,115 @@ export default function QuestionnaireScreen() {
             onNext={() => setShowOnboarding(false)}
           >
             <Text style={styles.extraInfo}>
-              The assessment will take approximately 10–15 minutes to complete
-              and includes questions about:{"\n\n"}• Basic health information
-              {"\n"}• Lifestyle factors{"\n"}• Medical history{"\n"}•
-              Reproductive health
-              {"\n\n"}
-              You can complete this assessment for yourself or together with
-              your partner.{"\n\n"}
-              Remember, you can return in 3 months to track your progress and
-              see how changes you've made have impacted your fertility health.
+              L'évaluation prend 10–15 minutes et couvre :{"\n\n"}• Santé
+              générale{"\n"}• Mode de vie{"\n"}• Antécédents médicaux{"\n"}•
+              Santé reproductive{"\n\n"}
+              Vous pouvez répondre seul(e) ou avec votre partenaire.{"\n\n"}
+              Revenez dans 3 mois pour suivre vos progrès.
             </Text>
           </OnboardingCard>
         </ScrollView>
       ) : (
         <ScrollView contentContainerStyle={styles.container}>
           {loading ? (
-            <Text style={styles.title}>Loading quiz...</Text>
+            <Text style={styles.title}>Chargement du questionnaire...</Text>
           ) : !isSubmitted ? (
             <>
-              <Text style={styles.title}>Self-Assessment Questionnaire</Text>
+              <Text style={styles.title}>Questionnaire d'auto-évaluation</Text>
 
-              {currentQuestion && (
-                <QuestionCard
-                  title={
-                    currentQuestion.id +
-                    " " +
-                    currentQuestion.topic +
-                    " Question\n"
-                  }
-                  sex={currentQuestion.sex}
-                  description={
-                    "Question " +
-                    (currentQuestionIndex + 1) +
-                    " of " +
-                    quizJson.length
-                  }
-                  onNext={async () => {
+              {currentQuestion && currentQuestion.id === "999" ? (
+                <ChangeSexCard
+                  sex={currentQuestion.sex === "male" ? "male" : "female"}
+                  onConfirm={() => {
+                    setAnswers((prev) => ({
+                      ...prev,
+                      [currentQuestion.id]: currentQuestion.sex,
+                    }));
                     if (currentQuestionIndex < quizJson.length - 1) {
                       setCurrentQuestionIndex(currentQuestionIndex + 1);
                     } else {
-                      await handleSubmit();
+                      handleSubmit();
                     }
                   }}
-                  onBack={
-                    currentQuestionIndex > 0
-                      ? () => setCurrentQuestionIndex(currentQuestionIndex - 1)
-                      : undefined
-                  }
-                  isLastQuestion={currentQuestionIndex === quizJson.length - 1}
-                  nextDisabled={isCurrentAnswerEmpty}
-                >
-                  <Text style={styles.question}>{currentQuestion.label}</Text>
-
-                  {currentQuestion.type === "text" && (
-                    <TextInput
-                      style={styles.input}
-                      keyboardType="default"
-                      placeholder={
-                        currentQuestion.unit
-                          ? `en ${currentQuestion.unit}`
-                          : "Entrez votre réponse"
+                />
+              ) : (
+                currentQuestion && (
+                  <QuestionCard
+                    title={
+                      currentQuestion.id +
+                      " " +
+                      currentQuestion.topic +
+                      " Question\n"
+                    }
+                    sex={currentQuestion.sex}
+                    description={
+                      "Question " +
+                      (currentQuestionIndex + 1) +
+                      " of " +
+                      quizJson.length
+                    }
+                    onNext={async () => {
+                      if (currentQuestionIndex < quizJson.length - 1) {
+                        setCurrentQuestionIndex(currentQuestionIndex + 1);
+                      } else {
+                        await handleSubmit();
                       }
-                      placeholderTextColor="#A4D65E"
-                      onChangeText={(text) =>
-                        handleAnswerChange(currentQuestion.id, text)
-                      }
-                      value={answers[currentQuestion.id] || ""}
-                    />
-                  )}
+                    }}
+                    onBack={
+                      currentQuestionIndex > 0
+                        ? () =>
+                            setCurrentQuestionIndex(currentQuestionIndex - 1)
+                        : undefined
+                    }
+                    isLastQuestion={
+                      currentQuestionIndex === quizJson.length - 1
+                    }
+                    nextDisabled={isCurrentAnswerEmpty}
+                  >
+                    <Text style={styles.question}>{currentQuestion.label}</Text>
 
-                  {currentQuestion.type === "number" && (
-                    <>
-                      <Slider
-                        value={Number(answers[currentQuestion.id]) || 0}
-                        onValueChange={(value) =>
-                          handleAnswerChange(
-                            currentQuestion.id,
-                            String(Math.round(value))
-                          )
+                    {currentQuestion.type === "text" && (
+                      <TextInput
+                        style={styles.input}
+                        keyboardType="default"
+                        placeholder={
+                          currentQuestion.unit
+                            ? `en ${currentQuestion.unit}`
+                            : "Entrez votre réponse"
                         }
-                        minimumValue={0}
-                        maximumValue={100}
-                        step={1}
-                        minimumTrackTintColor="#A4D65E"
-                        maximumTrackTintColor="#0097A9"
-                        thumbTintColor="#059669"
+                        placeholderTextColor="#A4D65E"
+                        onChangeText={(text) =>
+                          handleAnswerChange(currentQuestion.id, text)
+                        }
+                        value={answers[currentQuestion.id] || ""}
                       />
-                      <Text style={{ textAlign: "center", marginTop: 10 }}>
-                        {answers[currentQuestion.id] || 0}{" "}
-                        {currentQuestion.unit ? currentQuestion.unit : ""}
-                      </Text>
-                    </>
-                  )}
+                    )}
 
-                  {currentQuestion.type === "boolean" && (
-                    <Picker
-                      selectedValue={answers[currentQuestion.id] || ""}
-                      onValueChange={(value) =>
-                        handleAnswerChange(currentQuestion.id, value)
-                      }
-                      style={styles.picker}
-                    >
-                      <Picker.Item label="" value="" />
-                      <Picker.Item label="yes" value="yes" />
-                      <Picker.Item label="no" value="no" />
-                    </Picker>
-                  )}
+                    {currentQuestion.type === "number" && (
+                      <>
+                        <Slider
+                          value={Number(answers[currentQuestion.id]) || 0}
+                          onValueChange={(value) =>
+                            handleAnswerChange(
+                              currentQuestion.id,
+                              String(Math.round(value))
+                            )
+                          }
+                          minimumValue={0}
+                          maximumValue={100}
+                          step={1}
+                          minimumTrackTintColor="#A4D65E"
+                          maximumTrackTintColor="#0097A9"
+                          thumbTintColor="#059669"
+                        />
+                        <Text style={{ textAlign: "center", marginTop: 10 }}>
+                          {answers[currentQuestion.id] || 0}{" "}
+                          {currentQuestion.unit ? currentQuestion.unit : ""}
+                        </Text>
+                      </>
+                    )}
 
-                  {(currentQuestion.type === "choice" ||
-                    currentQuestion.type === "list") &&
-                    currentQuestion.choices && (
+                    {currentQuestion.type === "boolean" && (
                       <Picker
                         selectedValue={answers[currentQuestion.id] || ""}
                         onValueChange={(value) =>
@@ -248,63 +248,82 @@ export default function QuestionnaireScreen() {
                         }
                         style={styles.picker}
                       >
-                        {currentQuestion.choices.map((choice, index) => (
-                          <Picker.Item
-                            key={index}
-                            label={choice}
-                            value={choice}
-                          />
-                        ))}
+                        <Picker.Item label="" value="" />
+                        <Picker.Item label="yes" value="yes" />
+                        <Picker.Item label="no" value="no" />
                       </Picker>
                     )}
 
-                  {currentQuestion.followUp &&
-                    answers[currentQuestion.id] === "yes" &&
-                    currentQuestion.followUp.map((subQuestion) => (
-                      <View
-                        key={subQuestion.id}
-                        style={styles.questionContainer}
-                      >
-                        <Text style={styles.question}>{subQuestion.label}</Text>
-                        {subQuestion.type === "number" ? (
-                          <>
-                            <Slider
-                              value={Number(answers[subQuestion.id]) || 0}
-                              onValueChange={(value) =>
-                                handleAnswerChange(
-                                  subQuestion.id,
-                                  String(Math.round(value))
-                                )
-                              }
-                              minimumValue={0}
-                              maximumValue={100}
-                              step={1}
-                              minimumTrackTintColor="#A4D65E"
-                              maximumTrackTintColor="#0097A9"
-                              thumbTintColor="#059669"
+                    {(currentQuestion.type === "choice" ||
+                      currentQuestion.type === "list") &&
+                      currentQuestion.choices && (
+                        <Picker
+                          selectedValue={answers[currentQuestion.id] || ""}
+                          onValueChange={(value) =>
+                            handleAnswerChange(currentQuestion.id, value)
+                          }
+                          style={styles.picker}
+                        >
+                          {currentQuestion.choices.map((choice, index) => (
+                            <Picker.Item
+                              key={index}
+                              label={choice}
+                              value={choice}
                             />
-                            <Text
-                              style={{ textAlign: "center", marginTop: 10 }}
-                            >
-                              {answers[subQuestion.id] || 0}{" "}
-                              {subQuestion.unit ? subQuestion.unit : ""}
-                            </Text>
-                          </>
-                        ) : (
-                          <TextInput
-                            style={styles.input}
-                            keyboardType="default"
-                            placeholder="Entrez votre réponse"
-                            placeholderTextColor="#A4D65E"
-                            onChangeText={(text) =>
-                              handleAnswerChange(subQuestion.id, text)
-                            }
-                            value={answers[subQuestion.id] || ""}
-                          />
-                        )}
-                      </View>
-                    ))}
-                </QuestionCard>
+                          ))}
+                        </Picker>
+                      )}
+
+                    {currentQuestion.followUp &&
+                      answers[currentQuestion.id] === "yes" &&
+                      currentQuestion.followUp.map((subQuestion) => (
+                        <View
+                          key={subQuestion.id}
+                          style={styles.questionContainer}
+                        >
+                          <Text style={styles.question}>
+                            {subQuestion.label}
+                          </Text>
+                          {subQuestion.type === "number" ? (
+                            <>
+                              <Slider
+                                value={Number(answers[subQuestion.id]) || 0}
+                                onValueChange={(value) =>
+                                  handleAnswerChange(
+                                    subQuestion.id,
+                                    String(Math.round(value))
+                                  )
+                                }
+                                minimumValue={0}
+                                maximumValue={100}
+                                step={1}
+                                minimumTrackTintColor="#A4D65E"
+                                maximumTrackTintColor="#0097A9"
+                                thumbTintColor="#059669"
+                              />
+                              <Text
+                                style={{ textAlign: "center", marginTop: 10 }}
+                              >
+                                {answers[subQuestion.id] || 0}{" "}
+                                {subQuestion.unit ? subQuestion.unit : ""}
+                              </Text>
+                            </>
+                          ) : (
+                            <TextInput
+                              style={styles.input}
+                              keyboardType="default"
+                              placeholder="Entrez votre réponse"
+                              placeholderTextColor="#A4D65E"
+                              onChangeText={(text) =>
+                                handleAnswerChange(subQuestion.id, text)
+                              }
+                              value={answers[subQuestion.id] || ""}
+                            />
+                          )}
+                        </View>
+                      ))}
+                  </QuestionCard>
+                )
               )}
 
               <Pressable
@@ -314,7 +333,7 @@ export default function QuestionnaireScreen() {
                 ]}
                 onPress={handleRetake}
               >
-                <Text style={styles.buttonText}>Restart</Text>
+                <Text style={styles.buttonText}>Recommencer</Text>
               </Pressable>
             </>
           ) : (
@@ -325,7 +344,7 @@ export default function QuestionnaireScreen() {
                   isAtRisk ? styles.atRisk : styles.lowRisk,
                 ]}
               >
-                {isAtRisk ? "At Risk" : "Low Risk"}
+                {isAtRisk ? "À risque" : "Faible risque"}
               </Text>
 
               <ResponseSummary
@@ -340,7 +359,7 @@ export default function QuestionnaireScreen() {
                 ]}
                 onPress={handleRetake}
               >
-                <Text style={styles.buttonText}>Restart</Text>
+                <Text style={styles.buttonText}>Recommencer</Text>
               </Pressable>
 
               {/* <Text

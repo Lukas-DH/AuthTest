@@ -12,7 +12,7 @@ export default function Index() {
           signOut();
         }}
       >
-        Sign Out Sign Out
+        Se déconnecter
       </Text>
     </View>
   );

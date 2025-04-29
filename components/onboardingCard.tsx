@@ -53,7 +53,7 @@ export default function OnboardingCard({
           )}
         </Pressable>
         <Text style={{ fontSize: 14, color: "#475569" }}>
-          Both the{" "}
+          Les partenaires{" "}
           <Text
             style={[
               styles.badge,
@@ -71,7 +71,7 @@ export default function OnboardingCard({
           >
             female
           </Text>{" "}
-          partner must be present to complete their portion of the assessment.
+          doivent être présents pour compléter leur partie de l'évaluation.
         </Text>
       </View>
       {onNext && (

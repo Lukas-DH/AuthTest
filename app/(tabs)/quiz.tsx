@@ -16,6 +16,7 @@ import {
   StyleSheet,
   Linking,
 } from "react-native";
+import QuestionRenderer from "@/components/questions/QuestionRenderer";
 
 export default function QuestionnaireScreen() {
   interface Question {
@@ -50,7 +51,7 @@ export default function QuestionnaireScreen() {
           `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes/`
         );
         const json = await res.json();
-        setQuizJson(json.data[1].question);
+        setQuizJson(json.data[0].question);
       } catch (error) {
         console.error("Failed to fetch quiz:", error);
       } finally {
@@ -149,193 +150,39 @@ export default function QuestionnaireScreen() {
           ) : !isSubmitted ? (
             <>
               <Text style={styles.title}>Questionnaire d'auto-évaluation</Text>
+              <QuestionCard
+                title={`${currentQuestion.id} ${currentQuestion.topic} Question\n`}
+                sex={currentQuestion.sex}
+                description={`Question ${currentQuestionIndex + 1} of ${
+                  quizJson.length
+                }`}
+                onNext={async () => {
+                  if (currentQuestionIndex < quizJson.length - 1) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                  } else {
+                    await handleSubmit();
+                  }
+                }}
+                onBack={
+                  currentQuestionIndex > 0
+                    ? () => setCurrentQuestionIndex(currentQuestionIndex - 1)
+                    : undefined
+                }
+                isLastQuestion={currentQuestionIndex === quizJson.length - 1}
+                nextDisabled={isCurrentAnswerEmpty}
+              >
+                <Text style={styles.question}>{currentQuestion.label}</Text>
 
-              {currentQuestion && currentQuestion.id === "999" ? (
-                <ChangeSexCard
-                  sex={currentQuestion.sex === "male" ? "male" : "female"}
-                  onConfirm={() => {
-                    setAnswers((prev) => ({
-                      ...prev,
-                      [currentQuestion.id]: currentQuestion.sex,
-                    }));
-                    if (currentQuestionIndex < quizJson.length - 1) {
-                      setCurrentQuestionIndex(currentQuestionIndex + 1);
-                    } else {
-                      handleSubmit();
-                    }
-                  }}
+                <QuestionRenderer
+                  question={currentQuestion}
+                  answer={answers[currentQuestion.id] || ""}
+                  answers={answers}
+                  // onChange={(value) =>
+                  //   handleAnswerChange(currentQuestion.id, value)
+                  // }
+                  onChange={handleAnswerChange}
                 />
-              ) : (
-                currentQuestion && (
-                  <QuestionCard
-                    title={
-                      currentQuestion.id +
-                      " " +
-                      currentQuestion.topic +
-                      " Question\n"
-                    }
-                    sex={currentQuestion.sex}
-                    description={
-                      "Question " +
-                      (currentQuestionIndex + 1) +
-                      " of " +
-                      quizJson.length
-                    }
-                    onNext={async () => {
-                      if (currentQuestionIndex < quizJson.length - 1) {
-                        setCurrentQuestionIndex(currentQuestionIndex + 1);
-                      } else {
-                        await handleSubmit();
-                      }
-                    }}
-                    onBack={
-                      currentQuestionIndex > 0
-                        ? () =>
-                            setCurrentQuestionIndex(currentQuestionIndex - 1)
-                        : undefined
-                    }
-                    isLastQuestion={
-                      currentQuestionIndex === quizJson.length - 1
-                    }
-                    nextDisabled={isCurrentAnswerEmpty}
-                  >
-                    <Text style={styles.question}>{currentQuestion.label}</Text>
-
-                    {currentQuestion.type === "text" && (
-                      <TextInput
-                        style={styles.input}
-                        keyboardType="default"
-                        placeholder={
-                          currentQuestion.unit
-                            ? `en ${currentQuestion.unit}`
-                            : "Entrez votre réponse"
-                        }
-                        placeholderTextColor="#A4D65E"
-                        onChangeText={(text) =>
-                          handleAnswerChange(currentQuestion.id, text)
-                        }
-                        value={answers[currentQuestion.id] || ""}
-                      />
-                    )}
-
-                    {currentQuestion.type === "number" && (
-                      <>
-                        <Slider
-                          value={Number(answers[currentQuestion.id]) || 0}
-                          onValueChange={(value) =>
-                            handleAnswerChange(
-                              currentQuestion.id,
-                              String(Math.round(value))
-                            )
-                          }
-                          minimumValue={Number(currentQuestion?.min) || 0}
-                          maximumValue={Number(currentQuestion?.max) || 100}
-                          step={1}
-                          minimumTrackTintColor="#A4D65E"
-                          maximumTrackTintColor="#0097A9"
-                          thumbTintColor="#059669"
-                        />
-                        <Text style={{ textAlign: "center", marginTop: 10 }}>
-                          {Number(answers[currentQuestion.id]) ==
-                          (currentQuestion?.min || 0)
-                            ? "-"
-                            : Number(answers[currentQuestion.id]) ==
-                              (currentQuestion?.max || 100)
-                            ? "+"
-                            : ""}
-                          {answers[currentQuestion.id] || 0}{" "}
-                          {currentQuestion.unit ? currentQuestion.unit : ""}
-                        </Text>
-                      </>
-                    )}
-
-                    {currentQuestion.type === "boolean" && (
-                      <Picker
-                        selectedValue={answers[currentQuestion.id] || ""}
-                        onValueChange={(value) =>
-                          handleAnswerChange(currentQuestion.id, value)
-                        }
-                        style={styles.picker}
-                      >
-                        <Picker.Item label="" value="" />
-                        <Picker.Item label="yes" value="yes" />
-                        <Picker.Item label="no" value="no" />
-                      </Picker>
-                    )}
-
-                    {(currentQuestion.type === "choice" ||
-                      currentQuestion.type === "list") &&
-                      currentQuestion.choices && (
-                        <Picker
-                          selectedValue={answers[currentQuestion.id] || ""}
-                          onValueChange={(value) =>
-                            handleAnswerChange(currentQuestion.id, value)
-                          }
-                          style={styles.picker}
-                        >
-                          {currentQuestion.choices.map((choice, index) => (
-                            <Picker.Item
-                              key={index}
-                              label={choice}
-                              value={choice}
-                            />
-                          ))}
-                        </Picker>
-                      )}
-
-                    {currentQuestion.followUp &&
-                      answers[currentQuestion.id] === "yes" &&
-                      currentQuestion.followUp.map((subQuestion) => (
-                        <View
-                          key={subQuestion.id}
-                          style={styles.questionContainer}
-                        >
-                          <Text style={styles.question}>
-                            {subQuestion.label}
-                          </Text>
-                          {subQuestion.type === "number" ? (
-                            <>
-                              <Slider
-                                value={Number(answers[subQuestion.id]) || 0}
-                                onValueChange={(value) =>
-                                  handleAnswerChange(
-                                    subQuestion.id,
-                                    String(Math.round(value))
-                                  )
-                                }
-                                minimumValue={Number(currentQuestion?.min) || 0}
-                                maximumValue={
-                                  Number(currentQuestion?.max) || 100
-                                }
-                                step={1}
-                                minimumTrackTintColor="#A4D65E"
-                                maximumTrackTintColor="#0097A9"
-                                thumbTintColor="#059669"
-                              />
-                              <Text
-                                style={{ textAlign: "center", marginTop: 10 }}
-                              >
-                                {answers[subQuestion.id] || 0}{" "}
-                                {subQuestion.unit ? subQuestion.unit : ""}
-                              </Text>
-                            </>
-                          ) : (
-                            <TextInput
-                              style={styles.input}
-                              keyboardType="default"
-                              placeholder="Entrez votre réponse"
-                              placeholderTextColor="#A4D65E"
-                              onChangeText={(text) =>
-                                handleAnswerChange(subQuestion.id, text)
-                              }
-                              value={answers[subQuestion.id] || ""}
-                            />
-                          )}
-                        </View>
-                      ))}
-                  </QuestionCard>
-                )
-              )}
+              </QuestionCard>
 
               <Pressable
                 style={({ pressed }) => [

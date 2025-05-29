@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
+// this fucntion is used to display the summary of the responses given by the user after submitting the form.
+
 interface ResponseSummaryProps {
   responses: Record<string, string>;
   questions: { id: string; label: string }[];

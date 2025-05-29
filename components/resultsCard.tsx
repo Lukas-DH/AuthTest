@@ -4,10 +4,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 // Define the AssessmentResult interface
 interface AssessmentResult {
-  riskLevel: "faible" | "élevé" | "élevé";
+  riskLevel: "pas de risque élevé" | "élevé";
   factors: {
     name: string;
-    severity: "faible" | "élevé" | "élevé";
+    severity: "pas de risque élevé" | "élevé";
     description: string;
     // recommendations: string[];
   }[];
@@ -28,12 +28,11 @@ export function ResultsCard({
   nextAssessmentDate,
   onScheduleReminder,
 }: ResultsCardProps) {
-  const getBadgeStyle = (level: "faible" | "moderate" | "élevé") => {
+  const getBadgeStyle = (level: "pas de risque élevé" | "élevé") => {
     switch (level) {
-      case "faible":
+      case "pas de risque élevé":
         return [styles.badge, { backgroundColor: "#d1fae5", color: "#065f46" }];
-      case "moderate":
-        return [styles.badge, { backgroundColor: "#fef3c7", color: "#92400e" }];
+
       case "élevé":
         return [styles.badge, { backgroundColor: "#fee2e2", color: "#991b1b" }];
       default:
@@ -44,119 +43,45 @@ export function ResultsCard({
   return (
     <ScrollView contentContainerStyle={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.title}>Your Assessment Results</Text>
-        <Text style={getBadgeStyle(result.riskLevel)}>
-          {result.riskLevel.charAt(0).toUpperCase() + result.riskLevel.slice(1)}{" "}
-          Risk
+        <Text style={styles.title}>
+          Résultat PREDICT-F pour la détection d’un risque élevé d’infertilité
         </Text>
+        <Text style={getBadgeStyle(result.riskLevel)}>
+          Pas de très fort risque d’infertilité détecté
+        </Text>
+        {/* <Text style={getBadgeStyle(result.riskLevel)}>{result.riskLevel}</Text> */}
         <Text style={styles.description}>
-          Assessment completed {assessmentDate.toDateString()}
+          Veuillez consulter les fiches conseils personnalisées afin d’améliorer
+          votre fertilité spontanée. En cas d’absence de grossesse après au
+          moins 12 mois d’essai, veuillez consulter un médecin spécialiste de
+          l’infertilité au CHU de Toulouse 05 67 77 11 02
+          {/* {assessmentDate.toDateString()} */}
         </Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          <Ionicons name="warning" size={18} color="#f59e0b" /> Identified Risk
-          Factors
+          <Ionicons name="warning" size={18} color="orange" /> Facteurs de
+          risque identifiés
         </Text>
         {result.factors.map((factor, idx) => (
           <View key={idx} style={styles.factor}>
             <View style={styles.factorHeader}>
               <Text style={styles.factorName}>{factor.name}</Text>
-              <Text style={getBadgeStyle(factor.severity)}>
-                {factor.severity}
-              </Text>
             </View>
+            <Text
+              style={[
+                styles.badge,
+                { backgroundColor: "#EAF2FB", color: "#065f46" },
+              ]}
+            >
+              Monsieur
+            </Text>
+
             <Text style={styles.factorDescription}>{factor.description}</Text>
-            {/* {factor.recommendations.length > 0 && (
-              <View>
-                <Text style={styles.recommendationTitle}>Recommendations:</Text>
-                {factor.recommendations.map((rec, i) => (
-                  <Text key={i} style={styles.recommendationText}>
-                    • {rec}
-                  </Text>
-                ))}
-              </View>
-            )} */}
           </View>
         ))}
       </View>
-
-      {/* <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          <Ionicons name="information-circle" size={18} color="#047857" />{" "}
-          Personalized Advice
-        </Text>
-        {result.advice.map((advice, idx) => (
-          <Text key={idx} style={styles.textItem}>
-            • {advice}
-          </Text>
-        ))}
-      </View> */}
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          <Ionicons name="calendar" size={18} color="#047857" /> Next Steps
-        </Text>
-        {result.nextSteps.map((step, idx) => (
-          <Text key={idx} style={styles.textItem}>
-            • {step}
-          </Text>
-        ))}
-      </View>
-
-      {nextAssessmentDate && (
-        <View style={styles.assessmentBox}>
-          <Text style={styles.assessmentText}>
-            <Ionicons name="time" size={16} color="#047857" /> Follow-up
-            scheduled for {nextAssessmentDate.toDateString()}
-          </Text>
-        </View>
-      )}
-
-      {!nextAssessmentDate && (
-        <View style={styles.footer}>
-          <Pressable
-            onPress={onScheduleReminder}
-            style={({ pressed }) => [
-              styles.button,
-              pressed && styles.buttonPressed,
-            ]}
-          >
-            <Text style={styles.buttonText}>Schedule 3-Month Follow-up</Text>
-            <Ionicons
-              name="arrow-forward"
-              size={16}
-              color="#FFF"
-              style={styles.icon}
-            />
-          </Pressable>
-        </View>
-      )}
-
-      {/* Download Results Button */}
-      <View style={styles.footer}>
-        <Pressable
-          onPress={() => {
-            // Handle the download action
-            console.log("Download initiated");
-          }}
-          style={({ pressed }) => [
-            styles.downloadButton,
-            pressed && styles.downloadButtonPressed,
-          ]}
-        >
-          <Ionicons
-            name="download-outline"
-            size={16}
-            color="#FFF"
-            style={styles.icon}
-          />
-          <Text style={styles.buttonText}>Download Results</Text>
-        </Pressable>
-      </View>
-
-      {"..."}
     </ScrollView>
   );
 }
@@ -183,7 +108,10 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: "#475569",
+    // color: "#475569",
+    color: "green",
+    // make bold
+    fontWeight: "600",
     marginTop: 4,
   },
   badge: {

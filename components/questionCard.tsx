@@ -48,8 +48,9 @@ export default function QuestionCard({
           sex === "female" && { backgroundColor: "#fce7f3" }, // light pink
         ]}
       >
-        {sex}
+        {sex === "male" ? "Monsieur" : "Madame"}
       </Text>
+
       <View style={styles.content}>{children}</View>
 
       {onNext && (

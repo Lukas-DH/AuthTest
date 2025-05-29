@@ -24,7 +24,7 @@ function BlogCard({ title, image, summary, author }: BlogCardProps) {
         <View style={styles.content}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.summary}>{summary}</Text>
-          <Text style={styles.author}>By {author}</Text>
+          <Text style={styles.author}>Par {author}</Text>
           {/* <View style={styles.footer}>
             <FontAwesome name="heart" size={18} color="#A4D65E" />
             <Text style={styles.likes}>{likes}</Text>

@@ -29,6 +29,8 @@ export default function QuestionnaireScreen() {
     choices?: string[];
     followUp?: Question[];
     points?: number;
+    min: string;
+    max: string;
   }
 
   const [quizJson, setQuizJson] = useState<Question[]>([]);
@@ -48,7 +50,7 @@ export default function QuestionnaireScreen() {
           `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes/`
         );
         const json = await res.json();
-        setQuizJson(json.data[0].question);
+        setQuizJson(json.data[1].question);
       } catch (error) {
         console.error("Failed to fetch quiz:", error);
       } finally {
@@ -127,16 +129,16 @@ export default function QuestionnaireScreen() {
         <ScrollView contentContainerStyle={styles.container}>
           <OnboardingCard
             title="Bienvenue"
-            description="Répondez à quelques questions pour recevoir un conseil personnalisé."
+            description="Répondez à quelques questions pour recevoir des conseil personnalisés."
             buttonText="Commencer"
             onNext={() => setShowOnboarding(false)}
           >
             <Text style={styles.extraInfo}>
-              L'évaluation prend 10–15 minutes et couvre :{"\n\n"}• Santé
-              générale{"\n"}• Mode de vie{"\n"}• Antécédents médicaux{"\n"}•
-              Santé reproductive{"\n\n"}
-              Vous pouvez répondre seul(e) ou avec votre partenaire.{"\n\n"}
-              Revenez dans 3 mois pour suivre vos progrès.
+              L’évaluation vous prendra environ 10 à 15 minutes et inclue des
+              questions sur:
+              {"\n\n"}• Sur votre santé en général
+              {"\n"}• Sur vos antécédents médicaux
+              {"\n"}• Sur vos modes de vie
             </Text>
           </OnboardingCard>
         </ScrollView>
@@ -226,14 +228,21 @@ export default function QuestionnaireScreen() {
                               String(Math.round(value))
                             )
                           }
-                          minimumValue={0}
-                          maximumValue={100}
+                          minimumValue={Number(currentQuestion?.min) || 0}
+                          maximumValue={Number(currentQuestion?.max) || 100}
                           step={1}
                           minimumTrackTintColor="#A4D65E"
                           maximumTrackTintColor="#0097A9"
                           thumbTintColor="#059669"
                         />
                         <Text style={{ textAlign: "center", marginTop: 10 }}>
+                          {Number(answers[currentQuestion.id]) ==
+                          (currentQuestion?.min || 0)
+                            ? "-"
+                            : Number(answers[currentQuestion.id]) ==
+                              (currentQuestion?.max || 100)
+                            ? "+"
+                            : ""}
                           {answers[currentQuestion.id] || 0}{" "}
                           {currentQuestion.unit ? currentQuestion.unit : ""}
                         </Text>
@@ -294,8 +303,10 @@ export default function QuestionnaireScreen() {
                                     String(Math.round(value))
                                   )
                                 }
-                                minimumValue={0}
-                                maximumValue={100}
+                                minimumValue={Number(currentQuestion?.min) || 0}
+                                maximumValue={
+                                  Number(currentQuestion?.max) || 100
+                                }
                                 step={1}
                                 minimumTrackTintColor="#A4D65E"
                                 maximumTrackTintColor="#0097A9"
@@ -344,7 +355,7 @@ export default function QuestionnaireScreen() {
                   isAtRisk ? styles.atRisk : styles.lowRisk,
                 ]}
               >
-                {isAtRisk ? "À risque" : "Faible risque"}
+                {true ? "Risque élevé" : "Pas de risque élevé"}
               </Text>
 
               <ResponseSummary
@@ -361,46 +372,6 @@ export default function QuestionnaireScreen() {
               >
                 <Text style={styles.buttonText}>Recommencer</Text>
               </Pressable>
-
-              {/* <Text
-                style={[
-                  styles.title,
-                  isAtRisk ? styles.atRisk : styles.lowRisk,
-                ]}
-              >
-                {isAtRisk ? "At Risk" : "Low Risk"}
-              </Text>
-
-              {riskyResponses.length > 0 ? (
-                <View style={styles.riskList}>
-                  <Text style={styles.riskTitle}>Your Ansewers:</Text>
-                  {riskyResponses.map((risk, index) => (
-                    <Pressable
-                      key={index}
-                      style={({ pressed }) => [
-                        styles.riskItem,
-                        pressed && styles.riskItemPressed,
-                      ]}
-                    >
-                      <Text style={styles.riskText}>{risk} - Learn More</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              ) : (
-                <Text style={styles.noRiskText}>
-                  No major risk factors detected. Keep up your healthy habits!
-                </Text>
-              )}
-
-              <Pressable
-                style={({ pressed }) => [
-                  styles.button,
-                  pressed && styles.buttonPressed,
-                ]}
-                onPress={handleRetake}
-              >
-                <Text style={styles.buttonText}>Retake Questionnaire</Text>
-              </Pressable> */}
             </>
           )}
         </ScrollView>
@@ -419,7 +390,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   atRisk: { color: "#FF4F4F" },
-  lowRisk: { color: "#A4D65E" },
+  lowRisk: { color: "red" },
   questionContainer: { marginBottom: 15 },
   question: {
     fontSize: 18,

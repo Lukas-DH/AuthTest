@@ -53,25 +53,25 @@ export default function OnboardingCard({
           )}
         </Pressable>
         <Text style={{ fontSize: 14, color: "#475569" }}>
-          Les partenaires{" "}
-          <Text
-            style={[
-              styles.badge,
-              { backgroundColor: "#EAF2FB", color: "#065f46" },
-            ]}
-          >
-            male
-          </Text>{" "}
-          and{" "}
+          Les deux membres du couples{" "}
           <Text
             style={[
               styles.badge,
               { backgroundColor: "#F3E3F9", color: "#065f46" },
             ]}
           >
-            female
+            Madame
           </Text>{" "}
-          doivent être présents pour compléter leur partie de l'évaluation.
+          et{" "}
+          <Text
+            style={[
+              styles.badge,
+              { backgroundColor: "#EAF2FB", color: "#065f46" },
+            ]}
+          >
+            Monsieur
+          </Text>{" "}
+          doivent être présents ensemble pour remplir ce questionnaire 
         </Text>
       </View>
       {onNext && (

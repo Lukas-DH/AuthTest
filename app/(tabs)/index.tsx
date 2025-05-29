@@ -11,38 +11,37 @@ export default function InfoScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Predict-F</Text>
         <Text style={styles.subtitle}>
-          Détection précoce et évaluation des risques de fertilité
+          Dépistage précoce et prévention des risques d’infertilité
         </Text>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>À propos de l'étude</Text>
+          <Text style={styles.cardTitle}>A propos de cette application </Text>
           <View style={styles.textGroup}>
             <Text style={styles.paragraph}>
-              Bienvenue à l'étude Fertility Companion. Cette application vise à
-              :
+              Cette application est destinée:
             </Text>
             <View style={styles.list}>
               <Text style={styles.listItem}>
-                • Détecter les premiers signes de problèmes de fertilité
+                • à vous donner des conseils personnalisés pour améliorer votre
+                fertilité spontanée et à suivre vos progrès dans la prévention
+                de ces risques.
               </Text>
               <Text style={styles.listItem}>
-                • Évaluer les principaux facteurs de risque
-              </Text>
-              <Text style={styles.listItem}>
-                • Offrir des conseils personnalisés
-              </Text>
-              <Text style={styles.listItem}>
-                • Suivre l'évolution au fil du temps
+                • à détecter des situations à très fort risque d’infertilité
+                nécessitant une consultation médicale spécialisée.
               </Text>
             </View>
             <Text style={styles.paragraph}>
-              Veuillez répondre à un questionnaire sur votre santé, mode de vie
-              et historique de fertilité (10–15 min).
+              Attention, l’absence de risque majeur identifié par l’application
+              ne garantit pas l’obtention rapide d’une grossesse. De plus, cette
+              application n’a pas été conçue pour estimer vos chances de
+              grossesse et ne remplace pas une consultation médicale lorsque
+              celle-ci peut s’avérer nécessaire. »
             </Text>
-            <Text style={styles.note}>
+            {/* <Text style={styles.note}>
               Remarque : cette application ne remplace pas un avis médical.
               Consultez un professionnel en cas de doute.
-            </Text>
+            </Text> */}
           </View>
         </View>
 
@@ -71,8 +70,8 @@ export default function InfoScreen() {
                 <Text style={{ color: "#fff", fontWeight: "bold" }}>✓</Text>
               )}
             </Pressable>
-            <Text style={{ fontSize: 14, color: "#334155" }}>
-              J'ai lu et compris les limites de cette étude.
+            <Text style={{ fontSize: 12, color: "#334155" }}>
+              J’ai lu et compris les limites de cette application 
             </Text>
           </View>
           <Pressable
@@ -84,13 +83,12 @@ export default function InfoScreen() {
             onPress={() => router.push("/quiz")}
             disabled={!consentChecked}
           >
-            <Text style={styles.buttonText}>Commencer l'évaluation</Text>
+            <Text style={styles.buttonText}>Démarrer l’évaluation</Text>
           </Pressable>
         </View>
 
         <Text style={styles.consent}>
-          En continuant, vous acceptez la collecte et l'analyse de vos données
-          pour cette étude.
+          En continuant, vous acceptez la collecte et l'analyse de vos données.
         </Text>
       </View>
     </ScrollView>
@@ -131,10 +129,21 @@ const styles = StyleSheet.create({
     color: "#047857",
     marginBottom: 10,
   },
-  textGroup: { gap: 10 },
-  paragraph: { fontSize: 16, color: "#334155" },
+  textGroup: { gap: 0 },
+  paragraph: {
+    fontSize: 13,
+    color: "#334155",
+    marginTop: 10,
+    lineHeight: 20,
+  },
   list: { marginTop: 10, marginBottom: 10 },
-  listItem: { fontSize: 16, color: "#334155", marginLeft: 10 },
+  listItem: {
+    marginTop: 10,
+    lineHeight: 20,
+    fontSize: 13,
+    color: "#334155",
+    marginLeft: 10,
+  },
   note: {
     fontSize: 14,
     color: "#64748b",

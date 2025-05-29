@@ -63,8 +63,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerTitle: "Home",
-          tabBarLabel: "home",
+          headerTitle: "Accueil",
+          tabBarLabel: "Accueil",
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "home-sharp" : "home-outline"}
@@ -92,8 +92,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="results"
         options={{
-          headerTitle: "Results",
-          tabBarLabel: "Results",
+          headerTitle: "Résultats",
+          tabBarLabel: "Résultats",
           tabBarIcon: ({ focused, color }) => (
             <Foundation
               name={focused ? "results-demographics" : "results-demographics"}

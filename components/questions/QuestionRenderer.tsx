@@ -2,6 +2,7 @@ import TextQuestion from "./TextQuestion";
 import NumberQuestion from "./NumberQuestion";
 import BooleanQuestion from "./BooleanQuestion";
 import ChoiceQuestion from "./ChoiceQuestion";
+import SelectQuestion from "./SelectQuestion";
 import FollowUpQuestion from "./FollowUpQuestion";
 
 type QuestionType = "text" | "number" | "boolean" | "choice" | "list";
@@ -51,9 +52,16 @@ export default function QuestionRenderer({
           />
         );
       case "choice":
-      case "list":
         return (
           <ChoiceQuestion
+            question={question}
+            answer={answer}
+            onChange={onChange}
+          />
+        );
+      case "list":
+        return (
+          <SelectQuestion
             question={question}
             answer={answer}
             onChange={onChange}

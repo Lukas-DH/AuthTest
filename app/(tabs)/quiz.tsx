@@ -17,6 +17,7 @@ import {
   Linking,
 } from "react-native";
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
+import QuestionnaireSelection from "@/components/questions/QuestionnaireSelection";
 
 export default function QuestionnaireScreen() {
   interface Question {
@@ -128,7 +129,15 @@ export default function QuestionnaireScreen() {
     <>
       {showOnboarding ? (
         <ScrollView contentContainerStyle={styles.container}>
-          <OnboardingCard
+          <QuestionnaireSelection
+            onSelectQuestionnaire={() => setShowOnboarding(true)}
+            onViewResults={() => router.push("/results")}
+            maleCompleted={true}
+            femaleCompleted={false}
+            // buttonText="Commencer"
+            onNext={() => setShowOnboarding(false)}
+          />
+          {/* <OnboardingCard
             title="Bienvenue"
             description="Répondez à quelques questions pour recevoir des conseil personnalisés."
             buttonText="Commencer"
@@ -141,7 +150,7 @@ export default function QuestionnaireScreen() {
               {"\n"}• Sur vos antécédents médicaux
               {"\n"}• Sur vos modes de vie
             </Text>
-          </OnboardingCard>
+          </OnboardingCard> */}
         </ScrollView>
       ) : (
         <ScrollView contentContainerStyle={styles.container}>
@@ -172,7 +181,6 @@ export default function QuestionnaireScreen() {
                 nextDisabled={isCurrentAnswerEmpty}
               >
                 <Text style={styles.question}>{currentQuestion.label}</Text>
-
                 <QuestionRenderer
                   question={currentQuestion}
                   answer={answers[currentQuestion.id] || ""}

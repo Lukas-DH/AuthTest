@@ -17,25 +17,28 @@ export default function ChangeSexCard({ sex, onConfirm }: ChangeSexCardProps) {
         <Text style={styles.sexHighlight}>
           {sex === "male" ? (
             <>
-              {" "}
+              {"\n"}
               <Text
                 style={[
                   styles.badge,
                   { backgroundColor: "#EAF2FB", color: "#065f46" },
                 ]}
               >
-                Partenaire masculin
+                Monsieur
               </Text>
             </>
           ) : (
-            <Text
-              style={[
-                styles.badge,
-                { backgroundColor: "#F3E3F9", color: "#065f46" },
-              ]}
-            >
-              Partenaire féminin
-            </Text>
+            <>
+              {"\n"}
+              <Text
+                style={[
+                  styles.badge,
+                  { backgroundColor: "#F3E3F9", color: "#065f46" },
+                ]}
+              >
+                Madame
+              </Text>
+            </>
           )}
         </Text>{" "}
       </Text>

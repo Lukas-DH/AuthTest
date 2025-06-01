@@ -61,7 +61,7 @@ export default function TabLayout() {
     >
       {" "}
       <Tabs.Screen
-        name="index"
+        name="welcome"
         options={{
           headerTitle: "Accueil",
           tabBarLabel: "Accueil",

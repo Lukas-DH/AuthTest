@@ -14,6 +14,7 @@ interface QuestionnaireSelectionProps {
   maleCompleted: boolean;
   femaleCompleted: boolean;
   onNext?: (event: GestureResponderEvent) => void;
+  onRestart?: () => void;
 }
 
 export default function QuestionnaireSelection({
@@ -22,6 +23,7 @@ export default function QuestionnaireSelection({
   maleCompleted,
   femaleCompleted,
   onNext,
+  onRestart,
 }: QuestionnaireSelectionProps) {
   const bothCompleted = maleCompleted && femaleCompleted;
 
@@ -46,6 +48,7 @@ export default function QuestionnaireSelection({
       {/* Male Questionnaire Card */}
       <Pressable
         onPress={() => onSelectQuestionnaire("male")}
+        disabled={maleCompleted}
         style={[
           styles.cardItem,
           maleCompleted && { borderColor: "#059669", borderWidth: 2 },
@@ -91,6 +94,7 @@ export default function QuestionnaireSelection({
       {/* Female Questionnaire Card */}
       <Pressable
         onPress={() => onSelectQuestionnaire("female")}
+        disabled={femaleCompleted}
         style={[
           styles.cardItem,
           femaleCompleted && { borderColor: "#059669", borderWidth: 2 },
@@ -156,20 +160,18 @@ export default function QuestionnaireSelection({
           </Pressable>
         </View>
       )}
-      {onNext && (
+      {onRestart && (
         <View style={styles.footer}>
           <Pressable
-            onPress={onNext}
-            // disabled={buttonDisabled || !isChecked}
+            onPress={onRestart}
             style={({ pressed }) => [
               styles.button,
               pressed && styles.buttonPressed,
-              // (buttonDisabled || !isChecked) && styles.buttonDisabled,
             ]}
           >
-            <Text style={styles.buttonText}>MOM</Text>
-            <Ionicons
-              name="arrow-forward"
+            <Text style={styles.buttonText}>Recommencer le questionnaire</Text>
+            <Feather
+              name="refresh-ccw"
               size={16}
               color="#FFF"
               style={styles.icon}

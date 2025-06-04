@@ -15,9 +15,11 @@ import {
   Pressable,
   StyleSheet,
   Linking,
+  KeyboardAvoidingView,
 } from "react-native";
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionnaireSelection from "@/components/questions/QuestionnaireSelection";
+import { calculateScore } from "@/utils/quizScoring";
 
 export default function QuestionnaireScreen() {
   interface Question {
@@ -38,21 +40,60 @@ export default function QuestionnaireScreen() {
   const [quizJson, setQuizJson] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isAtRisk, setIsAtRisk] = useState(false);
-  const [riskyResponses, setRiskyResponses] = useState<string[]>([]);
+  // const [isSubmitted, setIsSubmitted] = useState(false);
+  // const [isAtRisk, setIsAtRisk] = useState(false);
+  // const [riskyResponses, setRiskyResponses] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(true);
   const { session, isLoading } = useSession();
+  const [selectedSex, setSelectedSex] = useState<"male" | "female" | null>(
+    null
+  );
+  const [maleCompleted, setMaleCompleted] = useState(false);
+  const [femaleCompleted, setFemaleCompleted] = useState(false);
+  const [scoreRisk, setScoreRisk] = useState(0);
+  const [answersId, setAnswersId] = useState<string | null>(null);
+  const user = session ? JSON.parse(session).user : null;
+
+  const fetchUserProgress = async () => {
+    if (!user?.id) return;
+    const response = await fetch(
+      // `${API_URL}/xresponses?filters[users_permissions_user]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
+      `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
+    );
+    const data = await response.json();
+
+    if (data.data?.[0]) {
+      const userResponse = data.data[0];
+      setAnswersId(userResponse.documentId); // Store the ID
+      setMaleCompleted(userResponse.maleCompleted || false);
+      setFemaleCompleted(userResponse.femaleCompleted || false);
+    }
+  };
+  console.log("selectedSex", selectedSex);
+  useEffect(() => {
+    if (user && user.id) {
+      fetchUserProgress();
+    }
+  }, [user]);
 
   useEffect(() => {
+    if (!selectedSex) return;
+
     const fetchQuiz = async () => {
+      setLoading(true);
+      setCurrentQuestionIndex(0); // Reset question index
       try {
         const res = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes/`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes`
         );
         const json = await res.json();
-        setQuizJson(json.data[0].question);
+
+        setQuizJson(
+          (json.data[0]?.question ?? []).filter(
+            (q: Question) => q.sex === selectedSex
+          )
+        );
       } catch (error) {
         console.error("Failed to fetch quiz:", error);
       } finally {
@@ -61,62 +102,91 @@ export default function QuestionnaireScreen() {
     };
 
     fetchQuiz();
-  }, []);
+  }, [selectedSex]);
 
   const handleAnswerChange = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
 
   const handleSubmit = async () => {
-    let score = 0;
-
-    if (parseInt(answers["F.19"]) >= 12) score += 1;
-    if (answers["F.20"] && parseInt(answers["F.20"]) >= 35) score += 1;
-    if (answers["F.21"] && answers["F.21"].length > 0) score += 1;
-
+    const currentSex = selectedSex;
+    let score = scoreRisk;
+    score = score + calculateScore(answers);
+    answers["score"] = score.toString();
+    setScoreRisk(score);
     const isHighRisk = score >= 1;
-    setIsAtRisk(isHighRisk);
-    setRiskyResponses(
-      isHighRisk
-        ? quizJson
-            // .filter((q) => Object.keys(answers).includes(q.id))
-            .map((q) => q.label)
-        : []
-    );
-    setIsSubmitted(true);
+    // setIsAtRisk(isHighRisk);
+    // setRiskyResponses(isHighRisk ? quizJson.map((q) => q.label) : []);
+    setShowOnboarding(true);
+    setSelectedSex(null);
+
+    const answerPayload = {
+      [currentSex === "male" ? "answerMale" : "answerFemale"]: answers,
+      [`${currentSex}Completed`]: true,
+      users_permissions_user: { connect: [{ id: user.id }] },
+    };
 
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
-      const raw = JSON.stringify({
-        data: {
-          response: answers,
-          users_permissions_user: {
-            connect: [{ id: "1" }],
-          },
-        },
-      });
-
-      await fetch("http://localhost:1337/api/xresponses", {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      });
+      if (answersId) {
+        // UPDATE existing entry
+        await fetch(`http://localhost:1337/api/xresponses/${answersId}`, {
+          headers: myHeaders,
+          method: "PUT",
+          body: JSON.stringify({ data: answerPayload }),
+        });
+        console.log("Updated entry with ID:", answerPayload);
+      } else {
+        // CREATE new entry
+        const response = await fetch(`http://localhost:1337/api/xresponses`, {
+          headers: myHeaders,
+          method: "POST",
+          body: JSON.stringify({ data: answerPayload }),
+        });
+        const data = await response.json();
+        setAnswersId(data.data.documentId);
+        console.log("Updated entry with ID2:", answerPayload);
+      }
     } catch (error) {
       console.error("Failed to submit answers:", error);
     }
-    router.push("/results");
   };
 
-  const handleRetake = () => {
-    setShowOnboarding(true);
-    setAnswers({});
-    setIsSubmitted(false);
-    setIsAtRisk(false);
-    setRiskyResponses([]);
-    setCurrentQuestionIndex(0);
+  // const handleRetake = () => {
+  //   setAnswersId(null);
+  //   setShowOnboarding(true);
+  //   setAnswers({});
+  //   // setIsSubmitted(false);
+  //   // setIsAtRisk(false);
+  //   // setRiskyResponses([]);
+  //   setCurrentQuestionIndex(0);
+  //   // setMaleCompleted(false);
+  //   // setFemaleCompleted(false);
+
+  //   setSelectedSex(null);
+  //   setScoreRisk(0);
+  // };
+
+  const handleRetake = async () => {
+    // Actually reset the database record
+    await fetch(`http://localhost:1337/api/xresponses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        data: {
+          maleCompleted: false,
+          femaleCompleted: false,
+          answerMale: {},
+          answerFemale: {},
+          users_permissions_user: { connect: [{ id: user.id }] },
+        },
+      }),
+    });
+
+    // Then fetch will get the reset values
+    fetchUserProgress();
   };
 
   const currentQuestion = quizJson[currentQuestionIndex];
@@ -130,105 +200,74 @@ export default function QuestionnaireScreen() {
       {showOnboarding ? (
         <ScrollView contentContainerStyle={styles.container}>
           <QuestionnaireSelection
-            onSelectQuestionnaire={() => setShowOnboarding(true)}
+            onSelectQuestionnaire={(sex) => {
+              setSelectedSex(sex);
+              setShowOnboarding(false);
+            }}
             onViewResults={() => router.push("/results")}
-            maleCompleted={true}
-            femaleCompleted={false}
+            maleCompleted={maleCompleted}
+            femaleCompleted={femaleCompleted}
             // buttonText="Commencer"
             onNext={() => setShowOnboarding(false)}
+            onRestart={handleRetake}
           />
-          {/* <OnboardingCard
-            title="Bienvenue"
-            description="Répondez à quelques questions pour recevoir des conseil personnalisés."
-            buttonText="Commencer"
-            onNext={() => setShowOnboarding(false)}
-          >
-            <Text style={styles.extraInfo}>
-              L’évaluation vous prendra environ 10 à 15 minutes et inclue des
-              questions sur:
-              {"\n\n"}• Sur votre santé en général
-              {"\n"}• Sur vos antécédents médicaux
-              {"\n"}• Sur vos modes de vie
-            </Text>
-          </OnboardingCard> */}
         </ScrollView>
       ) : (
         <ScrollView contentContainerStyle={styles.container}>
-          {loading ? (
-            <Text style={styles.title}>Chargement du questionnaire...</Text>
-          ) : !isSubmitted ? (
-            <>
-              <Text style={styles.title}>Questionnaire d'auto-évaluation</Text>
-              <QuestionCard
-                title={`${currentQuestion.id} ${currentQuestion.topic} Question\n`}
-                sex={currentQuestion.sex}
-                description={`Question ${currentQuestionIndex + 1} of ${
-                  quizJson.length
-                }`}
-                onNext={async () => {
-                  if (currentQuestionIndex < quizJson.length - 1) {
-                    setCurrentQuestionIndex(currentQuestionIndex + 1);
-                  } else {
-                    await handleSubmit();
+          <KeyboardAvoidingView>
+            {loading || !currentQuestion ? (
+              <Text style={styles.title}>Chargement du questionnaire...</Text>
+            ) : (
+              // !isSubmitted ?
+              <>
+                <Text style={styles.title}>
+                  Questionnaire d'auto-évaluation
+                </Text>
+                <QuestionCard
+                  title={`${currentQuestion.id} ${currentQuestion.topic} Question\n`}
+                  sex={currentQuestion.sex}
+                  description={`Question ${currentQuestionIndex + 1} of ${
+                    quizJson.length
+                  }`}
+                  onNext={async () => {
+                    if (currentQuestionIndex < quizJson.length - 1) {
+                      setCurrentQuestionIndex(currentQuestionIndex + 1);
+                    } else {
+                      await handleSubmit();
+                    }
+                  }}
+                  onBack={
+                    currentQuestionIndex > 0
+                      ? () => setCurrentQuestionIndex(currentQuestionIndex - 1)
+                      : undefined
                   }
-                }}
-                onBack={
-                  currentQuestionIndex > 0
-                    ? () => setCurrentQuestionIndex(currentQuestionIndex - 1)
-                    : undefined
-                }
-                isLastQuestion={currentQuestionIndex === quizJson.length - 1}
-                nextDisabled={isCurrentAnswerEmpty}
-              >
-                <Text style={styles.question}>{currentQuestion.label}</Text>
-                <QuestionRenderer
-                  question={currentQuestion}
-                  answer={answers[currentQuestion.id] || ""}
-                  answers={answers}
-                  // onChange={(value) =>
-                  //   handleAnswerChange(currentQuestion.id, value)
-                  // }
-                  onChange={handleAnswerChange}
-                />
-              </QuestionCard>
+                  isLastQuestion={currentQuestionIndex === quizJson.length - 1}
+                  nextDisabled={isCurrentAnswerEmpty}
+                >
+                  <Text style={styles.question}>{currentQuestion.label}</Text>
+                  <QuestionRenderer
+                    question={currentQuestion}
+                    answer={answers[currentQuestion.id] || ""}
+                    answers={answers}
+                    // onChange={(value) =>
+                    //   handleAnswerChange(currentQuestion.id, value)
+                    // }
+                    onChange={handleAnswerChange}
+                  />
+                </QuestionCard>
 
-              <Pressable
-                style={({ pressed }) => [
-                  styles.button,
-                  pressed && styles.buttonPressed,
-                ]}
-                onPress={handleRetake}
-              >
-                <Text style={styles.buttonText}>Recommencer</Text>
-              </Pressable>
-            </>
-          ) : (
-            <>
-              <Text
-                style={[
-                  styles.title,
-                  isAtRisk ? styles.atRisk : styles.lowRisk,
-                ]}
-              >
-                {true ? "Risque élevé" : "Pas de risque élevé"}
-              </Text>
-
-              <ResponseSummary
-                responses={answers}
-                questions={quizJson.map((q) => ({ id: q.id, label: q.label }))}
-              />
-
-              <Pressable
-                style={({ pressed }) => [
-                  styles.button,
-                  pressed && styles.buttonPressed,
-                ]}
-                onPress={handleRetake}
-              >
-                <Text style={styles.buttonText}>Recommencer</Text>
-              </Pressable>
-            </>
-          )}
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.button,
+                    pressed && styles.buttonPressed,
+                  ]}
+                  onPress={handleRetake}
+                >
+                  <Text style={styles.buttonText}>Recommencer</Text>
+                </Pressable>
+              </>
+            )}
+          </KeyboardAvoidingView>
         </ScrollView>
       )}
     </>

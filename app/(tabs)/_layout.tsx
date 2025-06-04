@@ -10,7 +10,7 @@ export default function TabLayout() {
   const router = useRouter();
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <Text style={styles.title}>Chargement...</Text>;
   }
 
   if (!session) {
@@ -143,5 +143,12 @@ const styles = {
   menuText: {
     color: "#fff",
     fontSize: 16,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold" as "bold",
+    textAlign: "center" as "center",
+    color: "#064e3b",
+    marginBottom: 10,
   },
 };

@@ -47,7 +47,9 @@ export function ResultsCard({
           Résultat PREDICT-F pour la détection d’un risque élevé d’infertilité
         </Text>
         <Text style={getBadgeStyle(result.riskLevel)}>
-          Pas de très fort risque d’infertilité détecté
+          {result.riskLevel == "élevé"
+            ? "risque élevé detecté"
+            : "pas de risque élevé détecté"}
         </Text>
         {/* <Text style={getBadgeStyle(result.riskLevel)}>{result.riskLevel}</Text> */}
         <Text style={styles.description}>
@@ -69,15 +71,24 @@ export function ResultsCard({
             <View style={styles.factorHeader}>
               <Text style={styles.factorName}>{factor.name}</Text>
             </View>
-            <Text
-              style={[
-                styles.badge,
-                { backgroundColor: "#EAF2FB", color: "#065f46" },
-              ]}
-            >
-              Monsieur
-            </Text>
-
+            <>
+              <Text
+                style={[
+                  styles.badge,
+                  { backgroundColor: "#EAF2FB", color: "#065f46" },
+                ]}
+              >
+                Monsieur
+              </Text>{" "}
+              <Text
+                style={[
+                  styles.badge,
+                  { backgroundColor: "#F3E3F9", color: "#065f46" },
+                ]}
+              >
+                Madame
+              </Text>
+            </>
             <Text style={styles.factorDescription}>{factor.description}</Text>
           </View>
         ))}

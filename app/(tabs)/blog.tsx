@@ -5,16 +5,22 @@ import BlogList from "@/components/blogList";
 const BlogScreen: React.FC = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Fertility Blog</Text>
+      <Text style={styles.title}>Fertility Blog</Text>
       <BlogList />
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#f8fafc",
+  //   alignItems: "center",
+  // },
   container: {
-    flex: 1,
+    padding: 20,
     backgroundColor: "#f8fafc",
+    flexGrow: 1,
     alignItems: "center",
   },
   header: {
@@ -23,6 +29,13 @@ const styles = StyleSheet.create({
     color: "#064e3b",
     textAlign: "center",
     marginVertical: 20,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#064e3b",
+    marginBottom: 10,
   },
 });
 

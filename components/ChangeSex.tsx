@@ -61,7 +61,7 @@ export default function ChangeSexCard({ sex, onConfirm }: ChangeSexCardProps) {
             <Text style={{ color: "#fff", fontWeight: "bold" }}>✓</Text>
           )}
         </Pressable>
-        <Text style={{ fontSize: 14, color: "#334155" }}>
+        <Text style={{ fontSize: 14, color: "#475569" }}>
           J'ai compris que les prochaines questions concernent{" "}
           {sex === "male" ? "le partenaire masculin" : "le partenaire féminin"}.
         </Text>

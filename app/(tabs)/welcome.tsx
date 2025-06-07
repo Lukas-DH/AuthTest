@@ -21,12 +21,12 @@ export default function InfoScreen() {
               Cette application est destinée:
             </Text>
             <View style={styles.list}>
-              <Text style={styles.listItem}>
+              <Text style={styles.paragraph}>
                 • à vous donner des conseils personnalisés pour améliorer votre
                 fertilité spontanée et à suivre vos progrès dans la prévention
                 de ces risques.
               </Text>
-              <Text style={styles.listItem}>
+              <Text style={styles.paragraph}>
                 • à détecter des situations à très fort risque d’infertilité
                 nécessitant une consultation médicale spécialisée.
               </Text>
@@ -70,7 +70,7 @@ export default function InfoScreen() {
                 <Text style={{ color: "#fff", fontWeight: "bold" }}>✓</Text>
               )}
             </Pressable>
-            <Text style={{ fontSize: 12, color: "#334155" }}>
+            <Text style={{ fontSize: 12, color: "#475569" }}>
               J’ai lu et compris les limites de cette application 
             </Text>
           </View>
@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
   },
   textGroup: { gap: 0 },
   paragraph: {
-    fontSize: 13,
-    color: "#334155",
+    fontSize: 14,
+    color: "#475569",
     marginTop: 10,
     lineHeight: 20,
   },
@@ -140,8 +140,8 @@ const styles = StyleSheet.create({
   listItem: {
     marginTop: 10,
     lineHeight: 20,
-    fontSize: 13,
-    color: "#334155",
+    fontSize: 14,
+    color: "#475569",
     marginLeft: 10,
   },
   note: {

@@ -36,12 +36,13 @@ export default function QuestionnaireSelection({
         </Text>
       </View>
       <View style={styles.content}>
-        <Text style={styles.bullets}>
+        <Text style={styles.description}>
           L’évaluation vous prendra environ 10 à 15 minutes et inclue des
           questions sur:
-          {"\n\n"}• Sur votre santé en général
-          {"\n"}• Sur vos antécédents médicaux
-          {"\n"}• Sur vos modes de vie
+          {/* {"\n\n"}• Sur votre santé en général */}
+          {"\n"}• Sur vos modes de vie.
+          {"\n"}• Questionnaire d’exposition aux toxiques environnementaux.
+          {"\n"}
         </Text>
       </View>
 
@@ -215,16 +216,17 @@ const styles = StyleSheet.create({
     color: "#475569",
     marginTop: 4,
     textAlign: "left",
+    lineHeight: 20,
   },
   content: {
     marginVertical: 10,
   },
-  bullets: {
-    fontSize: 13, // Match extraInfo in onboardingCard
-    color: "#334155",
-    lineHeight: 20,
-    marginBottom: 10,
-  },
+  // bullets: {
+  //   fontSize: 14, // Match extraInfo in onboardingCard
+  //   color: "#475569",
+  //   lineHeight: 20,
+  //   marginBottom: 10,
+  // },
   button: {
     backgroundColor: "#059669",
     paddingVertical: 12,
@@ -265,7 +267,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   cardStatus: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#475569",
   },
   resultsCard: {

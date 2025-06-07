@@ -8,10 +8,7 @@ export function calculateScore(answers: Record<string, any>): number {
     score += 1;
   if (answers["F.7"] === "yes") score += 1;
   if (answers["F.8"] === "yes") score += 1;
-  if (
-    Array.isArray(answers["F.9.1.1"]) &&
-    answers["F.9.1.1"].includes("les deux")
-  )
+  if (Array.isArray(answers["F.9.2.1"]) || answers["F.9.2.1"] === "both")
     score += 1;
   if (answers["F.9.2.1"] === "yes") score += 1;
   if (answers["F.9.1.1"] === "yes") score += 1;

@@ -1,4 +1,5 @@
 import Slider from "@react-native-community/slider";
+import { Platform } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useState, useEffect } from "react";
 import OnboardingCard from "../../components/onboardingCard";
@@ -59,7 +60,8 @@ export default function QuestionnaireScreen() {
     if (!user?.id) return;
     const response = await fetch(
       // `${API_URL}/xresponses?filters[users_permissions_user]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
-      `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
+      // `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
+      `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
     );
     const data = await response.json();
 
@@ -118,7 +120,6 @@ export default function QuestionnaireScreen() {
     // setIsAtRisk(isHighRisk);
     // setRiskyResponses(isHighRisk ? quizJson.map((q) => q.label) : []);
     setShowOnboarding(true);
-    setSelectedSex(null);
 
     const answerPayload = {
       [currentSex === "male" ? "answerMale" : "answerFemale"]: answers,
@@ -132,21 +133,33 @@ export default function QuestionnaireScreen() {
 
       if (answersId) {
         // UPDATE existing entry
-        await fetch(`http://localhost:1337/api/xresponses/${answersId}`, {
-          headers: myHeaders,
-          method: "PUT",
-          body: JSON.stringify({ data: answerPayload }),
-        });
+        // await fetch(`http://localhost:1337/api/xresponses/${answersId}`, {
+        await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses/${answersId}`,
+          {
+            headers: myHeaders,
+            method: "PUT",
+            body: JSON.stringify({ data: answerPayload }),
+          }
+        );
         console.log("Updated entry with ID:", answerPayload);
+        setSelectedSex(null);
+        setAnswers({});
       } else {
         // CREATE new entry
-        const response = await fetch(`http://localhost:1337/api/xresponses`, {
-          headers: myHeaders,
-          method: "POST",
-          body: JSON.stringify({ data: answerPayload }),
-        });
+        // const response = await fetch(`http://localhost:1337/api/xresponses`, {
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses`,
+          {
+            headers: myHeaders,
+            method: "POST",
+            body: JSON.stringify({ data: answerPayload }),
+          }
+        );
         const data = await response.json();
+        setSelectedSex(null);
         setAnswersId(data.data.documentId);
+        setAnswers({});
         console.log("Updated entry with ID2:", answerPayload);
       }
     } catch (error) {
@@ -169,9 +182,39 @@ export default function QuestionnaireScreen() {
   //   setScoreRisk(0);
   // };
 
-  const handleRetake = async () => {
+  const handleCancel = async () => {
+    // setAnswersId(null);
+    setShowOnboarding(true);
+    setAnswers({});
+    // setIsSubmitted(false);
+    // setIsAtRisk(false);
+    // setRiskyResponses([]);
+    setCurrentQuestionIndex(0);
+    // setMaleCompleted(false);
+    // setFemaleCompleted(false);
+
+    setSelectedSex(null);
+    setScoreRisk(0);
     // Actually reset the database record
-    await fetch(`http://localhost:1337/api/xresponses`, {
+    // await fetch(`http://localhost:1337/api/xresponses`, {
+  };
+
+  const handleRetake = async () => {
+    setAnswersId(null);
+    setShowOnboarding(true);
+    setAnswers({});
+    // setIsSubmitted(false);
+    // setIsAtRisk(false);
+    // setRiskyResponses([]);
+    setCurrentQuestionIndex(0);
+    // setMaleCompleted(false);
+    // setFemaleCompleted(false);
+
+    setSelectedSex(null);
+    setScoreRisk(0);
+    // Actually reset the database record
+    // await fetch(`http://localhost:1337/api/xresponses`, {
+    await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/xresponses`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -191,14 +234,19 @@ export default function QuestionnaireScreen() {
 
   const currentQuestion = quizJson[currentQuestionIndex];
   const isCurrentAnswerEmpty = !answers[currentQuestion?.id];
-  console.log(answers);
-  console.log(session ? JSON.parse(session).user.username : null);
+  console.log("WHY HOIN", answers);
+  console.log(
+    session
+      ? JSON.parse(session).user.username + " " + JSON.parse(session).user.id
+      : null
+  );
   // const { jwt } = session ? JSON.parse(session) : { jwt: null };
 
   return (
     <>
       {showOnboarding ? (
         <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>Questionnaire d'auto-évaluation</Text>
           <QuestionnaireSelection
             onSelectQuestionnaire={(sex) => {
               setSelectedSex(sex);
@@ -213,8 +261,18 @@ export default function QuestionnaireScreen() {
           />
         </ScrollView>
       ) : (
-        <ScrollView contentContainerStyle={styles.container}>
-          <KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.select({
+            ios: "padding",
+            android: "height",
+          })}
+          keyboardVerticalOffset={Platform.select({
+            ios: 100,
+            android: 20,
+          })}
+        >
+          <ScrollView contentContainerStyle={styles.container}>
             {loading || !currentQuestion ? (
               <Text style={styles.title}>Chargement du questionnaire...</Text>
             ) : (
@@ -226,7 +284,7 @@ export default function QuestionnaireScreen() {
                 <QuestionCard
                   title={`${currentQuestion.id} ${currentQuestion.topic} Question\n`}
                   sex={currentQuestion.sex}
-                  description={`Question ${currentQuestionIndex + 1} of ${
+                  description={`Question ${currentQuestionIndex + 1} sur ${
                     quizJson.length
                   }`}
                   onNext={async () => {
@@ -261,14 +319,14 @@ export default function QuestionnaireScreen() {
                     styles.button,
                     pressed && styles.buttonPressed,
                   ]}
-                  onPress={handleRetake}
+                  onPress={handleCancel}
                 >
-                  <Text style={styles.buttonText}>Recommencer</Text>
+                  <Text style={styles.buttonText}>Annuler</Text>
                 </Pressable>
               </>
             )}
-          </KeyboardAvoidingView>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
     </>
   );
@@ -343,8 +401,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   extraInfo: {
-    fontSize: 13,
-    color: "#334155",
+    fontSize: 14,
+    color: "#475569",
     marginTop: 10,
     lineHeight: 20,
   },

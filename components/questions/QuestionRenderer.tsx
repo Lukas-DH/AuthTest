@@ -4,8 +4,9 @@ import BooleanQuestion from "./BooleanQuestion";
 import ChoiceQuestion from "./ChoiceQuestion";
 import SelectQuestion from "./SelectQuestion";
 import FollowUpQuestion from "./FollowUpQuestion";
+import BothQuestion from "./BothQuestions";
 
-type QuestionType = "text" | "number" | "boolean" | "choice" | "list";
+type QuestionType = "text" | "number" | "boolean" | "both" | "choice" | "list";
 
 interface Question {
   id: string;
@@ -46,6 +47,14 @@ export default function QuestionRenderer({
       case "boolean":
         return (
           <BooleanQuestion
+            question={question}
+            answer={answer}
+            onChange={onChange}
+          />
+        );
+      case "both":
+        return (
+          <BothQuestion
             question={question}
             answer={answer}
             onChange={onChange}

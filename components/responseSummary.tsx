@@ -14,7 +14,7 @@ export default function ResponseSummary({
 }: ResponseSummaryProps) {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Your Responses</Text>
+      <Text style={styles.title}>Your Responses (EXAMPLE - Can add this)</Text>
       {questions.map((q) => (
         <View key={q.id} style={styles.responseItem}>
           <Text style={styles.questionLabel}>{q.label}</Text>
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   answerText: {
     fontSize: 16,
-    color: "#334155",
+    color: "#475569",
     fontWeight: "500",
   },
 });

@@ -91,6 +91,13 @@ export default function QuestionRenderer({
           onChange={onChange}
         />
       )}
+      {question.followUpNo && answer === "no" && (
+        <FollowUpQuestion
+          questions={question.followUpNo}
+          answers={answers}
+          onChange={onChange}
+        />
+      )}
     </>
   );
 }

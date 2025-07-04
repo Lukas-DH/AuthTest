@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { ResultsCard } from "@/components/resultsCard";
 import ResponseSummary from "@/components/responseSummary";
+import { generateAdviceFactors } from "@/utils/quizAdvice";
 
 export default function ResultsScreen() {
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,7 @@ export default function ResultsScreen() {
   const [score, setScore] = useState(0);
   const [maleCompleted, setMaleCompleted] = useState(false);
   const [femaleCompleted, setFemaleCompleted] = useState(false);
+  const [adviceFactors, setAdviceFactors] = useState<any[]>([]);
 
   const { session, isLoading } = useSession();
   const router = useRouter();
@@ -46,6 +48,10 @@ export default function ResultsScreen() {
           const male = latest.answerMale || {};
           const female = latest.answerFemale || {};
           setAnswers({ male, female });
+
+          const combinedAnswers = { ...male, ...female };
+          const factors = generateAdviceFactors(combinedAnswers);
+          setAdviceFactors(factors);
 
           const maleScore = male.score ? parseInt(male.score, 10) : 0;
           const femaleScore = female.score ? parseInt(female.score, 10) : 0;
@@ -113,19 +119,29 @@ export default function ResultsScreen() {
     ? "⚠️ Attention : Risque élevé détecté"
     : "✅ Aucun risque élevé détecté";
   const description = isAtRisk
-    ? "Vos réponses indiquent un ou plusieurs facteurs de risque. Il est conseillé de consulter un médecin pour un avis personnalisé."
-    : "Aucun facteur de risque élevé détecté selon vos réponses. Continuez à adopter de bonnes habitudes !";
+    ? "Veuillez consulter un médecin spécialiste de l’infertilté."
+    : "Veuillez consulter les fiches conseils personnalisées afin d’améliorer votre fertilité spontanée. En cas d’absence de grossesse après 12 mois d’essai, veuillez consulter un médecin spécialiste de l’infertilté.";
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Résultats personnalisés</Text>
-      <ResultsCard
+      {/* <ResultsCard
         result={{
           riskLevel,
           factors: [
             {
               name: factorName,
+              severity: "pas de risque élevé",
+              description,
+            },
+            {
+              name: "other factors",
               severity,
+              description,
+            },
+            {
+              name: factorName + "XXX",
+              severity: "élevé",
               description,
             },
           ],
@@ -137,11 +153,26 @@ export default function ResultsScreen() {
         }}
         assessmentDate={new Date()}
         onScheduleReminder={() => Alert.alert("Rappel planifié appuyé")}
+      /> */}
+
+      <ResultsCard
+        result={{
+          riskLevel,
+          description,
+          factors: adviceFactors, // Use generated factors instead of hardcoded ones
+          nextSteps: [
+            isAtRisk
+              ? "Discutez de vos résultats avec un professionnel de santé."
+              : "Revérifiez dans 3 mois ou en cas de changement.",
+          ],
+        }}
+        assessmentDate={new Date()}
+        onScheduleReminder={() => Alert.alert("Rappel planifié appuyé")}
       />
-      <View style={styles.card}>
+      {/* <View style={styles.card}>
         <Text style={styles.summaryTitle}>Résumé de vos réponses</Text>
         <ResponseSummary responses={answers} questions={questions} />
-      </View>
+      </View> */}
     </ScrollView>
   );
 }

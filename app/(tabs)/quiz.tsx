@@ -281,8 +281,40 @@ export default function QuestionnaireScreen() {
                 <Text style={styles.title}>
                   Questionnaire d'auto-évaluation
                 </Text>
+                <View
+                  style={{
+                    width: "100%",
+                    height: 8,
+                    backgroundColor: "#e5e7eb",
+                    borderRadius: 4,
+                    marginBottom: 12,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: `${
+                        ((currentQuestionIndex + 1) / quizJson.length) * 100
+                      }%`,
+                      height: "100%",
+                      backgroundColor: "#059669",
+                      borderRadius: 4,
+                    }}
+                  />
+                </View>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "#475569",
+                    marginBottom: 8,
+                  }}
+                >
+                  {Math.round(
+                    ((currentQuestionIndex + 1) / quizJson.length) * 100
+                  )}
+                  % complété
+                </Text>
                 <QuestionCard
-                  title={`${currentQuestion.id} ${currentQuestion.topic} Question\n`}
+                  title={`${currentQuestion.id} ${currentQuestion.topic}\n`}
                   sex={currentQuestion.sex}
                   description={`Question ${currentQuestionIndex + 1} sur ${
                     quizJson.length

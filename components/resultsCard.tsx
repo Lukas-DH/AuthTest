@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 // Define the AssessmentResult interface
 interface AssessmentResult {
   riskLevel: "pas de risque élevé" | "élevé";
+  description?: string; // Optional description for the result
   factors: {
     name: string;
     severity: "pas de risque élevé" | "élevé";
@@ -53,25 +54,29 @@ export function ResultsCard({
         </Text>
         {/* <Text style={getBadgeStyle(result.riskLevel)}>{result.riskLevel}</Text> */}
         <Text style={styles.description}>
-          Veuillez consulter les fiches conseils personnalisées afin d’améliorer
+          {result.description}
+          {/* Veuillez consulter les fiches conseils personnalisées afin d’améliorer
           votre fertilité spontanée. En cas d’absence de grossesse après au
           moins 12 mois d’essai, veuillez consulter un médecin spécialiste de
-          l’infertilité au CHU de Toulouse 05 67 77 11 02
+          l’infertilité au CHU de Toulouse 05 67 77 11 02 */}
           {/* {assessmentDate.toDateString()} */}
         </Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          <Ionicons name="warning" size={18} color="orange" /> Facteurs de
-          risque identifiés
+          {/* <Ionicons name="warning" size={18} color="orange" /> */}
+          📋 Conseils personnalisés
+        </Text>
+        <Text style={styles.factorDescription}>
+          Cliquez ci-dessous pour en savoir plus👇
         </Text>
         {result.factors.map((factor, idx) => (
           <View key={idx} style={styles.factor}>
             <View style={styles.factorHeader}>
               <Text style={styles.factorName}>{factor.name}</Text>
             </View>
-            <>
+            {/* <>
               <Text
                 style={[
                   styles.badge,
@@ -88,7 +93,7 @@ export function ResultsCard({
               >
                 Madame
               </Text>
-            </>
+            </> */}
             <Text style={styles.factorDescription}>{factor.description}</Text>
           </View>
         ))}

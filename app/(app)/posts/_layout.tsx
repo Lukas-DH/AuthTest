@@ -7,7 +7,7 @@ import { useSession } from "@/components/ctx";
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
-
+  const user = session ? JSON.parse(session).user : null;
   const { documentId } = useLocalSearchParams<{ documentId: string }>();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
@@ -45,7 +45,7 @@ export default function AppLayout() {
       <Stack.Screen
         name="[documentId]"
         options={{
-          title: "Blog",
+          title: `Blog`,
           headerTitleStyle: { color: "#fff" },
           headerShown: true,
         }}

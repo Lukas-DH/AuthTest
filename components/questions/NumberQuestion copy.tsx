@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
 import Slider from "@react-native-community/slider";
 
 export default function NumberQuestion({ question, answer, onChange }: any) {
@@ -9,18 +9,6 @@ export default function NumberQuestion({ question, answer, onChange }: any) {
 
   return (
     <>
-      <Text
-        style={{
-          textAlign: "center",
-          paddingBottom: 30,
-          paddingTop: 10,
-          fontSize: 36, // Large font
-          fontWeight: "bold", // Bold text
-        }}
-      >
-        {value === min ? "-" : value === max ? "+" : ""}
-        {answer || 0} {question.unit || ""}
-      </Text>
       <Slider
         value={value}
         onValueChange={(value) =>
@@ -33,8 +21,10 @@ export default function NumberQuestion({ question, answer, onChange }: any) {
         maximumTrackTintColor="#0097A9"
         thumbTintColor="#059669"
       />
+      <Text style={{ textAlign: "center", marginTop: 10 }}>
+        {value === min ? "-" : value === max ? "+" : ""}
+        {answer || 0} {question.unit || ""}
+      </Text>
     </>
   );
 }
-
-// CatsWinPeas88!

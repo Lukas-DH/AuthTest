@@ -35,10 +35,10 @@ export default function QuestionCard({
       <View style={styles.header}>
         <Text style={styles.title}>
           {title}
-          <Text style={styles.description}>
+          {/* <Text style={styles.description}>
             {description}
             {"\n"}
-          </Text>
+          </Text> */}
         </Text>
       </View>
       <Text

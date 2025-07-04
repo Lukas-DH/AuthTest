@@ -15,20 +15,23 @@ export function calculateScore(answers: Record<string, any>): number {
   if (answers["F.9.3"] === "yes") score += 1;
   if (answers["F.9.4"] === "yes") score += 1;
   if (
-    Array.isArray(answers["H.19.1"])
-      ? answers["H.19.1"]
-          .map((s: string) =>
-            s
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-          )
-          .includes("steroides anabolisants")
-      : (answers["H.19.1"] || "")
+    answers["H.19.1"]
+      .map((s: string) =>
+        s
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
-          .includes("steroides")
+      )
+      .includes("steroides anabolisants")
+  )
+    score += 1;
+
+  if (
+    answers["H.19.2"]
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .includes("steroides")
   )
     score += 1;
   if (answers["H.5"] === "yes") score += 1;

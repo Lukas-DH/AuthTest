@@ -162,23 +162,23 @@ export default function QuestionnaireSelection({
         </View>
       )}
       {onRestart && (
-        <View style={styles.footer}>
-          <Pressable
-            onPress={onRestart}
-            style={({ pressed }) => [
-              styles.button,
-              pressed && styles.buttonPressed,
-            ]}
-          >
-            <Text style={styles.buttonText}>Recommencer le questionnaire</Text>
-            <Feather
-              name="refresh-ccw"
-              size={16}
-              color="#FFF"
-              style={styles.icon}
-            />
-          </Pressable>
-        </View>
+        // <View style={styles.footer}>
+        <Pressable
+          onPress={onRestart}
+          style={({ pressed }) => [
+            styles.button,
+            pressed && styles.buttonPressed,
+          ]}
+        >
+          <Text style={styles.buttonText}>Recommencer le questionnaire</Text>
+          <Feather
+            name="refresh-ccw"
+            size={16}
+            color="#FFF"
+            style={styles.icon}
+          />
+        </Pressable>
+        // </View>
       )}
     </View>
   );
@@ -229,11 +229,12 @@ const styles = StyleSheet.create({
   // },
   button: {
     backgroundColor: "#059669",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    padding: 16,
     borderRadius: 8,
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "center",
+    marginTop: 20,
   },
   buttonPressed: {
     backgroundColor: "#047857",

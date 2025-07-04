@@ -1,0 +1,138 @@
+[
+  {
+    "id": "999",
+    "sex": "female",
+    "type": "number",
+    "unit": "kg",
+    "label": "the following questions are now for: ",
+    "topic": "",
+    "advice": "",
+    "points": 0
+  },
+  {
+    "id": "F.12",
+    "sex": "female",
+    "type": "choice",
+    "unit": "verres",
+    "label": "Quelle est votre consommation d’alcool (nombre de verres par semaine) ?",
+    "topic": "générale",
+    "advice": "La consommation modérée d'alcool peut affecter la fertilité, même à faibles doses. Si vous buvez entre 3 et 5 verres par semaine, vous êtes dans une zone dite « modérée ». Ce niveau peut avoir des effets subtils sur votre fertilité et le développement fœtal précoce. Réduire votre consommation, voire vous abstenir, peut améliorer vos chances de conception et favoriser une grossesse en bonne santé.",
+    "points": 0,
+    "choices": ["", "0", "1-4", "5-10", "10-20"]
+  },
+  {
+    "id": "F.13",
+    "sex": "female",
+    "type": "number",
+    "unit": "cafés",
+    "label": "Quelle est votre consommation de café (nombre de cafés par jour) ?",
+    "topic": "générale",
+    "advice": "Une consommation modérée de café (jusqu’à 2 tasses par jour) est généralement considérée comme sûre pendant la période de conception. Cependant, des quantités plus élevées peuvent être associées à un risque légèrement accru de fausse couche ou à des cycles menstruels perturbés. Si vous consommez plus de 3 cafés par jour, envisagez de réduire pour optimiser vos chances de grossesse.",
+    "points": 0
+  },
+  {
+    "id": "F.14.1",
+    "sex": "female",
+    "type": "boolean",
+    "label": "Consommez-vous du cannabis quotidiennement ?",
+    "topic": "générale",
+    "advice": "Le cannabis peut perturber l'équilibre hormonal nécessaire à l'ovulation et affecter la qualité des cycles. Si vous consommez régulièrement, une pause de plusieurs mois (idéalement un an) est recommandée pour permettre à votre corps de retrouver une fertilité optimale. Si vous avez des doutes ou des questions, n'hésitez pas à consulter un professionnel de santé.",
+    "points": 0,
+    "followUp": [
+      {
+        "id": "F.14.2",
+        "type": "number",
+        "unit": "joints",
+        "label": "Combien de joints par jour ?",
+        "advice": "Plus la consommation est fréquente, plus l’impact potentiel sur la fertilité est important. Même 1 à 2 joints par jour peuvent influencer les cycles hormonaux. Réduire progressivement ou arrêter peut aider votre système reproductif à retrouver son équilibre."
+      }
+    ]
+  },
+  {
+    "id": "F.15.1",
+    "sex": "female",
+    "type": "boolean",
+    "label": "Consommez-vous d’autres drogues régulièrement ?",
+    "topic": "générale",
+    "advice": "La consommation de drogues peut affecter de manière significative la fertilité, en particulier si elle est fréquente ou récente. Une période d'abstinence prolongée permet souvent au système hormonal de se rétablir. Nous vous conseillons d’en parler avec un médecin pour évaluer l’impact spécifique sur votre santé reproductive.",
+    "points": 0,
+    "followUp": [
+      {
+        "id": "F.15.2",
+        "type": "text",
+        "label": "Lesquelles ?",
+        "advice": "Selon la drogue mentionnée (cocaïne, MDMA, LSD, etc.), les effets sur la fertilité varient. Une consommation passée mais arrêtée depuis plusieurs années réduit probablement les risques. Une évaluation médicale reste essentielle pour comprendre les éventuels effets persistants et assurer un accompagnement adapté."
+      }
+    ]
+  },
+  {
+    "id": "F.16",
+    "sex": "female",
+    "type": "choice",
+    "label": "Avez-vous eu des grossesses précédentes ?",
+    "topic": "générale",
+    "advice": "Avoir eu une grossesse dans le passé est un signe positif, car cela indique que la conception est possible. Cependant, chaque tentative peut être différente, surtout si des années se sont écoulées ou si des complications sont survenues. N'hésitez pas à discuter de vos antécédents avec votre gynécologue pour évaluer vos chances actuelles.",
+    "points": 0,
+    "choices": ["", "Une", "Les deux"]
+  },
+  {
+    "id": "999",
+    "sex": "male",
+    "type": "number",
+    "unit": "kg",
+    "label": "the following questions are now for: ",
+    "topic": "",
+    "advice": "",
+    "points": 0
+  },
+  {
+    "id": "F.17",
+    "sex": "male",
+    "type": "number",
+    "unit": "kg",
+    "label": "Quel est votre poids ?",
+    "topic": "générale",
+    "advice": "Le poids, associé à la taille, permet de calculer l’IMC, un indicateur important pour la fertilité. Un IMC trop bas ou trop élevé peut perturber l’ovulation. Une alimentation équilibrée et une activité physique modérée sont recommandées. Consultez un professionnel si vous êtes en dehors des valeurs normales pour adapter votre parcours.",
+    "points": 0
+  },
+  {
+    "id": "F.18",
+    "sex": "male",
+    "type": "number",
+    "unit": "cm",
+    "label": "Quelle est votre taille ?",
+    "topic": "générale",
+    "advice": "Combinée au poids, la taille permet de calculer l’IMC. Ce dernier peut influer sur l’équilibre hormonal et donc sur la fertilité. Il est utile de surveiller son IMC pour maximiser les chances de conception naturelle.",
+    "points": 0
+  },
+  {
+    "id": "F.19",
+    "sex": "male",
+    "type": "number",
+    "unit": "mois",
+    "label": "Depuis combien de mois essayez-vous de concevoir ?",
+    "topic": "générale",
+    "advice": "Si vous essayez depuis moins de 12 mois (ou 6 mois si vous avez plus de 35 ans), cela reste dans la norme. Au-delà, une consultation de fertilité peut être indiquée pour explorer d’éventuelles causes et proposer un accompagnement personnalisé.",
+    "points": 0
+  },
+  {
+    "id": "F.20",
+    "sex": "male",
+    "type": "number",
+    "unit": "ans",
+    "label": "Âge de votre partenaire ?",
+    "topic": "générale",
+    "advice": "L’âge du partenaire masculin peut aussi influencer la fertilité. Après 40 ans, la qualité du sperme peut diminuer, avec des impacts potentiels sur les taux de fécondation et la qualité embryonnaire. Un spermogramme peut être proposé pour faire le point.",
+    "points": 1
+  },
+  {
+    "id": "F.21",
+    "sex": "male",
+    "type": "list",
+    "label": "Antécédents médicaux",
+    "topic": "générale",
+    "advice": "Certains antécédents médicaux comme le diabète, l’hypertension ou l’endométriose peuvent avoir un impact sur la fertilité. Un suivi médical régulier et un traitement adapté sont essentiels pour optimiser vos chances de conception. N’hésitez pas à échanger avec un professionnel de santé pour adapter votre prise en charge.",
+    "points": 1,
+    "choices": ["", "Diabète", "Hypertension", "Endométriose", "Autres"]
+  }
+]

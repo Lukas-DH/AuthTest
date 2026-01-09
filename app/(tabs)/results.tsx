@@ -67,7 +67,7 @@ export default function ResultsScreen() {
       }
     };
     fetchLatest();
-  }, [[user?.id]]);
+  }, [user?.id]);
 
   // Show loading indicator
   if (loading) {

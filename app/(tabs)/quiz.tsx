@@ -77,7 +77,7 @@ export default function QuestionnaireScreen() {
     if (user && user.id) {
       fetchUserProgress();
     }
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!selectedSex) return;
@@ -162,6 +162,8 @@ export default function QuestionnaireScreen() {
         setAnswers({});
         console.log("Updated entry with ID2:", answerPayload);
       }
+      // Refresh user progress to update completion status
+      await fetchUserProgress();
     } catch (error) {
       console.error("Failed to submit answers:", error);
     }

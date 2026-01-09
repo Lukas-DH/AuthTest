@@ -32,12 +32,12 @@ export function ResultsCard({
   const getBadgeStyle = (level: "pas de risque élevé" | "élevé") => {
     switch (level) {
       case "pas de risque élevé":
-        return [styles.badge, { backgroundColor: "#d1fae5", color: "#065f46" }];
+        return [styles.riskBadge, { backgroundColor: "#d1fae5", color: "#065f46" }];
 
       case "élevé":
-        return [styles.badge, { backgroundColor: "#fee2e2", color: "#991b1b" }];
+        return [styles.riskBadge, { backgroundColor: "#fee2e2", color: "#991b1b" }];
       default:
-        return styles.badge;
+        return styles.riskBadge;
     }
   };
 
@@ -139,6 +139,20 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     overflow: "hidden",
     marginTop: 4,
+  },
+  riskBadge: {
+    alignSelf: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: 8,
+    marginBottom: 8,
+    overflow: "hidden",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   section: { marginVertical: 10 },
   sectionTitle: {

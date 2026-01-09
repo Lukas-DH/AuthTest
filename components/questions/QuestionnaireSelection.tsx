@@ -32,16 +32,16 @@ export default function QuestionnaireSelection({
       <View style={styles.header}>
         <Text style={styles.title}>Bienvenue</Text>
         <Text style={styles.description}>
-          Répondez à quelques questions pour recevoir des conseil personnalisés.
+          Répondez à quelques questions pour recevoir des conseils
+          personnalisés.
         </Text>
       </View>
       <View style={styles.content}>
         <Text style={styles.description}>
-          L’évaluation vous prendra environ 10 à 15 minutes et inclue des
-          questions sur:
-          {/* {"\n\n"}• Sur votre santé en général */}
-          {"\n"}• Sur vos modes de vie.
-          {"\n"}• Questionnaire d’exposition aux toxiques environnementaux.
+          L’évaluation vous prendra environ 10 à 15 minutes et inclut des
+          questions sur :{/* {"\n\n"}• Sur votre santé en général */}
+          {"\n"}• Vos modes de vie.
+          {"\n"}• Vos expositions aux toxiques environnementaux.
           {"\n"}
         </Text>
       </View>

@@ -18,16 +18,16 @@ export default function InfoScreen() {
           <Text style={styles.cardTitle}>A propos de cette application </Text>
           <View style={styles.textGroup}>
             <Text style={styles.paragraph}>
-              Cette application est destinée:
+              Cette application est destinée :
             </Text>
             <View style={styles.list}>
               <Text style={styles.paragraph}>
-                • à vous donner des conseils personnalisés pour améliorer votre
-                fertilité spontanée et à suivre vos progrès dans la prévention
-                de ces risques.
+                à vous donner des conseils personnalisés pour améliorer votre
+                fertilité spontanée et à suivre vos progrès dans la mise en
+                application de certains conseils de prévention.
               </Text>
               <Text style={styles.paragraph}>
-                • à détecter des situations à très fort risque d’infertilité
+                à détecter des situations à très fort risque d’infertilité
                 nécessitant une consultation médicale spécialisée.
               </Text>
             </View>
@@ -36,7 +36,7 @@ export default function InfoScreen() {
               ne garantit pas l’obtention rapide d’une grossesse. De plus, cette
               application n’a pas été conçue pour estimer vos chances de
               grossesse et ne remplace pas une consultation médicale lorsque
-              celle-ci peut s’avérer nécessaire. »
+              celle-ci peut s’avérer.
             </Text>
             {/* <Text style={styles.note}>
               Remarque : cette application ne remplace pas un avis médical.
@@ -71,7 +71,7 @@ export default function InfoScreen() {
               )}
             </Pressable>
             <Text style={{ fontSize: 12, color: "#475569" }}>
-              J’ai lu et compris les limites de cette application 
+              J’ai lu et compris les limites de cette application.
             </Text>
           </View>
           <Pressable

@@ -2,25 +2,26 @@ import React from "react";
 import {
   View,
   Text,
-  Image,
+  // Image,
   StyleSheet,
-  ImageSourcePropType,
+  // ImageSourcePropType,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
 interface BlogCardProps {
   title: string;
-  image: ImageSourcePropType;
+  // image: ImageSourcePropType;
   summary: string;
   // likes: number;
   author: string;
 }
 
-function BlogCard({ title, image, summary, author }: BlogCardProps) {
+// function BlogCard({ title, image, summary, author }: BlogCardProps) {
+function BlogCard({ title, summary, author }: BlogCardProps) {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.card}>
-        <Image source={image} style={styles.image} />
+        {/* <Image source={image} style={styles.image} /> */}
         <View style={styles.content}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.summary}>{summary}</Text>
@@ -37,7 +38,7 @@ function BlogCard({ title, image, summary, author }: BlogCardProps) {
 
 const styles = StyleSheet.create({
   outerContainer: {
-    flexGrow: 1,
+    width: "100%",
     alignItems: "center",
     paddingTop: 10,
     paddingBottom: 10,

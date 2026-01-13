@@ -2,7 +2,21 @@ import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import BlogCard from "./blogCard";
 import { Link } from "expo-router";
-import type { Post } from "@/types/post";
+
+interface Post {
+  documentId: number;
+  title: string;
+  summary: string;
+  author: string;
+  //   image: {
+  //     url: string;
+  //     formats?: {
+  //       thumbnail?: {
+  //         url: string;
+  //       };
+  //     };
+  //   };
+}
 
 export default function BlogList() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -12,7 +26,8 @@ export default function BlogList() {
     const fetchPosts = async () => {
       try {
         let res = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`
+          // `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/posts`
         );
         // if (!res.ok) throw new Error("Primary API failed");
         let json = await res.json();
@@ -41,27 +56,30 @@ export default function BlogList() {
   return (
     <View style={{ width: '100%', alignItems: 'center' }}>
       {Array.isArray(posts) &&
-        posts.map((post) => {
-          const isPdf = post.image?.mime === "application/pdf";
-          const href = isPdf
-            ? { pathname: "/posts/[documentId]/pdf" as const, params: { documentId: post.documentId.toString() } }
-            : { pathname: "/posts/[documentId]" as const, params: { documentId: post.documentId.toString() } };
-
-          return (
-            <Link
+        posts.map((post) => (
+          // console.log("URL", post.image?.url),
+          <Link
+            key={post.documentId}
+            href={{
+              pathname: "/posts/[documentId]",
+              params: { documentId: post.documentId.toString() },
+            }}
+            style={{ width: '100%' }}
+          >
+            <BlogCard
               key={post.documentId}
-              href={href}
-              style={{ width: '100%' }}
-            >
-              <BlogCard
-                key={post.documentId}
-                title={post.title}
-                summary={post.summary}
-                author={post.author || ""}
-              />
-            </Link>
-          );
-        })}
+              title={post.title}
+              summary={post.summary}
+              author={post.author}
+              // image={{
+              //   uri: `${
+              //     post.image?.formats?.thumbnail?.url ?? post.image?.url
+              //   }`
+              //   ,
+              // }}
+            />
+          </Link>
+        ))}
     </View>
   );
 }

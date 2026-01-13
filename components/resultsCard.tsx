@@ -1,16 +1,17 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
 
 // Define the AssessmentResult interface
 interface AssessmentResult {
   riskLevel: "pas de risque élevé" | "élevé";
   description?: string; // Optional description for the result
   factors: {
+    documentId: string;
     name: string;
-    severity: "pas de risque élevé" | "élevé";
     description: string;
-    // recommendations: string[];
+    pdfUrl?: string | null;
   }[];
   // advice: string[];
   nextSteps: string[];
@@ -72,30 +73,34 @@ export function ResultsCard({
           Cliquez ci-dessous pour en savoir plus👇
         </Text>
         {result.factors.map((factor, idx) => (
-          <View key={idx} style={styles.factor}>
+          <Pressable
+            key={factor.documentId}
+            style={({ pressed }) => [
+              styles.factor,
+              pressed && styles.factorPressed,
+            ]}
+            onPress={async () => {
+              if (factor.pdfUrl) {
+                try {
+                  await WebBrowser.openBrowserAsync(factor.pdfUrl);
+                } catch (error) {
+                  console.error("Error opening PDF:", error);
+                }
+              }
+            }}
+            disabled={!factor.pdfUrl}
+          >
             <View style={styles.factorHeader}>
               <Text style={styles.factorName}>{factor.name}</Text>
+              {factor.pdfUrl && (
+                <Ionicons name="document-text" size={20} color="#047857" />
+              )}
             </View>
-            {/* <>
-              <Text
-                style={[
-                  styles.badge,
-                  { backgroundColor: "#EAF2FB", color: "#065f46" },
-                ]}
-              >
-                Monsieur
-              </Text>{" "}
-              <Text
-                style={[
-                  styles.badge,
-                  { backgroundColor: "#F3E3F9", color: "#065f46" },
-                ]}
-              >
-                Madame
-              </Text>
-            </> */}
             <Text style={styles.factorDescription}>{factor.description}</Text>
-          </View>
+            {factor.pdfUrl && (
+              <Text style={styles.tapHint}>Appuyez pour ouvrir le PDF</Text>
+            )}
+          </Pressable>
         ))}
       </View>
     </ScrollView>
@@ -167,14 +172,26 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
+    backgroundColor: "#fff",
+  },
+  factorPressed: {
+    backgroundColor: "#f0fdf4",
+    borderColor: "#047857",
   },
   factorHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
-  factorName: { fontWeight: "600", color: "#047857" },
+  factorName: { fontWeight: "600", color: "#047857", flex: 1 },
   factorDescription: { fontSize: 14, color: "#475569", marginBottom: 4 },
+  tapHint: {
+    fontSize: 12,
+    color: "#047857",
+    fontStyle: "italic",
+    marginTop: 4,
+  },
   recommendationTitle: { fontWeight: "500", marginTop: 4 },
   recommendationText: { fontSize: 14, color: "#1f2937" },
   textItem: { fontSize: 14, color: "#1f2937", marginBottom: 4 },

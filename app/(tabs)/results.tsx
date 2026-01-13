@@ -38,11 +38,12 @@ export default function ResultsScreen() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
+        // Fetch user responses
         const response = await fetch(
           `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
-          // `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
         );
         const json = await response.json();
+
         if (json.data && json.data.length > 0) {
           const latest = json.data[0];
           const male = latest.answerMale || {};
@@ -50,8 +51,27 @@ export default function ResultsScreen() {
           setAnswers({ male, female });
 
           const combinedAnswers = { ...male, ...female };
-          const factors = generateAdviceFactors(combinedAnswers);
-          setAdviceFactors(factors);
+
+          // Get post titles based on quiz answers
+          const postTitles = generateAdviceFactors(combinedAnswers);
+
+          // Fetch posts from API
+          const postsResponse = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`
+          );
+          const postsJson = await postsResponse.json();
+
+          // Match posts with the generated titles
+          const matchedPosts = postsJson.data
+            .filter((post: any) => postTitles.includes(post.title))
+            .map((post: any) => ({
+              documentId: post.documentId,
+              name: post.title,
+              description: post.summary,
+              pdfUrl: post.image?.url || null,
+            }));
+
+          setAdviceFactors(matchedPosts);
 
           const maleScore = male.score ? parseInt(male.score, 10) : 0;
           const femaleScore = female.score ? parseInt(female.score, 10) : 0;

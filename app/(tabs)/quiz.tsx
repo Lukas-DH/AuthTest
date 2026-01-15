@@ -72,12 +72,15 @@ export default function QuestionnaireScreen() {
       setFemaleCompleted(userResponse.femaleCompleted || false);
     }
   };
-  console.log("selectedSex", selectedSex);
+  // console.log("selectedSex", selectedSex);
+  console.log("PINGING QUIZ!!!");
+
   useEffect(() => {
     if (user && user.id) {
       fetchUserProgress();
     }
-  }, [user?.id]);
+    // }, [user?.id]);
+  }, [maleCompleted, femaleCompleted]);
 
   useEffect(() => {
     if (!selectedSex) return;

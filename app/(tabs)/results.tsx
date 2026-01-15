@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { useSession } from "@/components/ctx";
 import {
   View,
@@ -34,9 +35,17 @@ export default function ResultsScreen() {
     },
     { id: "F.16.1", label: "Lesquelles ? :" },
   ];
+  useFocusEffect(
+    useCallback(() => {
+      // Don't run if session is still loading or user is not available
+      if (isLoading || !user?.id) {
+        return;
+      }
 
-  useEffect(() => {
-    const fetchLatest = async () => {
+      // Reset loading state when screen comes into focus
+      setLoading(true);
+
+      const fetchLatest = async () => {
       try {
         // Fetch user responses
         const response = await fetch(
@@ -86,11 +95,13 @@ export default function ResultsScreen() {
         setLoading(false);
       }
     };
-    fetchLatest();
-  }, [user?.id]);
 
-  // Show loading indicator
-  if (loading) {
+      fetchLatest();
+    }, [user?.id, isLoading])
+  );
+
+  // Show loading indicator while session loads or data fetches
+  if (loading || isLoading || !user) {
     return (
       <View
         style={[

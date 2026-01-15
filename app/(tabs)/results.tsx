@@ -49,7 +49,7 @@ export default function ResultsScreen() {
       try {
         // Fetch user responses
         const response = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
         );
         const json = await response.json();
 

@@ -1,7 +1,8 @@
 import Slider from "@react-native-community/slider";
 import { Platform } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import OnboardingCard from "../../components/onboardingCard";
 import QuestionCard from "@/components/questionCard";
 import ResponseSummary from "@/components/responseSummary";
@@ -59,9 +60,9 @@ export default function QuestionnaireScreen() {
   const fetchUserProgress = async () => {
     if (!user?.id) return;
     const response = await fetch(
-      // `${API_URL}/xresponses?filters[users_permissions_user]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
-      // `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
-      `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=createdAt:desc&pagination[limit]=1`
+      // `${API_URL}/xresponses?filters[users_permissions_user]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
+      // `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
+      `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
     );
     const data = await response.json();
 
@@ -73,14 +74,17 @@ export default function QuestionnaireScreen() {
     }
   };
   // console.log("selectedSex", selectedSex);
-  console.log("PINGING QUIZ!!!");
 
-  useEffect(() => {
-    if (user && user.id) {
+  useFocusEffect(
+    useCallback(() => {
+      // Don't fetch if session is still loading or user is not available
+      if (isLoading || !user?.id) {
+        return;
+      }
+
       fetchUserProgress();
-    }
-    // }, [user?.id]);
-  }, [maleCompleted, femaleCompleted]);
+    }, [user?.id, isLoading])
+  );
 
   useEffect(() => {
     if (!selectedSex) return;

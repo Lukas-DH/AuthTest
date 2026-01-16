@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Pressable } from "react-native";
 import BlogCard from "./blogCard";
-import { Link } from "expo-router";
+import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import type { Post } from "@/types/post";
 
 export default function BlogList() {
@@ -43,14 +44,26 @@ export default function BlogList() {
       {Array.isArray(posts) &&
         posts.map((post) => {
           const isPdf = post.image?.mime === "application/pdf";
-          const href = isPdf
-            ? { pathname: "/posts/[documentId]/pdf" as const, params: { documentId: post.documentId.toString() } }
-            : { pathname: "/posts/[documentId]" as const, params: { documentId: post.documentId.toString() } };
 
           return (
-            <Link
+            <Pressable
               key={post.documentId}
-              href={href}
+              onPress={async () => {
+                if (isPdf && post.image?.url) {
+                  // For PDFs, open directly in browser (same as results page)
+                  try {
+                    await WebBrowser.openBrowserAsync(post.image.url);
+                  } catch (error) {
+                    console.error("Error opening PDF:", error);
+                  }
+                } else {
+                  // For markdown posts, navigate to the post viewer
+                  router.push({
+                    pathname: "/posts/[documentId]",
+                    params: { documentId: post.documentId.toString() }
+                  });
+                }
+              }}
               style={{ width: '100%' }}
             >
               <BlogCard
@@ -59,7 +72,7 @@ export default function BlogList() {
                 summary={post.summary}
                 author={post.author || ""}
               />
-            </Link>
+            </Pressable>
           );
         })}
     </View>

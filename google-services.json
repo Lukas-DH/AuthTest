@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56368277414",
+    "project_id": "predictf-7e006",
+    "storage_bucket": "predictf-7e006.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56368277414:android:5f76b5126538efc40f5167",
+        "android_client_info": {
+          "package_name": "com.openivf.chu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyD9u8dkucwiF37uZU2_fsBp8-cKKUMtA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

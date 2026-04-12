@@ -2,7 +2,7 @@
 
 // Return an array of post titles to fetch from the API
 export function generateAdviceFactors(
-  answers: Record<string, string>
+  answers: Record<string, string>,
 ): string[] {
   const postTitles: string[] = [];
 
@@ -123,8 +123,12 @@ export function generateAdviceFactors(
     postTitles.push("12 Sommeil");
   }
 
+  if (answers["H.36"] === "yes") {
+    postTitles.push("5 Chaleur");
+  }
+
   // Add a couple random ones for demo
-  postTitles.push("5 Chaleur");
+
   postTitles.push("1 Age féminin");
 
   // Remove duplicates

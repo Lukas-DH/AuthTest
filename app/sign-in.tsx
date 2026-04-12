@@ -70,11 +70,11 @@ export default function SignIn() {
         onPress={async () => {
           try {
             await signIn(email, password);
+            router.push("/verify-phone");
           } catch (error: any) {
             console.error("Sign-in failed:", error);
             alert(error?.message || "Failed to sign in. Please try again.");
           }
-          // router.replace("/");
         }}
       >
         <Text style={styles.buttonText}>CONNECT</Text>

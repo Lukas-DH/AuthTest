@@ -1,50 +1,110 @@
-# Welcome to your Expo app 👋
+# Predict-F Frontend (AuthTest)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Fertility risk assessment mobile/web application built with React Native and Expo.
 
-## Get started
+## Quick Start
 
-1. Install dependencies
+### Development
 
+1. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+2. **Start development server**
    ```bash
-    npx expo start
+   npm start
+   # or
+   npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. **Run on specific platform**
+   ```bash
+   npm run web          # Open in browser
+   npm run ios          # Open iOS simulator
+   npm run android      # Open Android emulator
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Deployment
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Current Live Deployment
+**Web App:** https://predictf--hgx92ou4nq.expo.app/
 
-## Get a fresh project
+### Deploy Web App
 
-When you're ready, run:
-
+**Method 1: Export and Deploy to EAS (What you've been using):**
 ```bash
-npm run reset-project
+# Export web build
+npx expo export --platform web
+
+# Deploy to EAS
+eas deploy
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+**Method 2: EAS Update (Over-the-air updates):**
+```bash
+# First time setup (if needed)
+npm install -g eas-cli
+eas login
 
-## Learn more
+# Deploy update
+eas update --branch production --message "Your update message"
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+**Method 3: Full EAS Build:**
+```bash
+eas build --platform web
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Mobile App Deployment (Not Yet Configured)
 
-## Join the community
+**iOS:**
+```bash
+eas build --platform ios
+eas submit --platform ios
+```
 
-Join our community of developers creating universal apps.
+**Android:**
+```bash
+eas build --platform android
+eas submit --platform android
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Environment Setup
+
+Make sure your `.env` file contains:
+```
+EXPO_PUBLIC_API_URL=https://calm-books-c61b70e3b2.strapiapp.com
+```
+
+## Project Structure
+
+- `/app` - File-based routing (Expo Router)
+- `/components` - Reusable UI components
+- `/assets` - Images, fonts, icons
+- `/constants` - App constants and theme
+
+## Tech Stack
+
+- **Framework:** Expo SDK 53 + React Native 0.79
+- **Language:** TypeScript
+- **Routing:** Expo Router (file-based)
+- **Backend:** Strapi CMS
+- **Auth:** JWT via SecureStore
+
+## Common Commands
+
+```bash
+npm start              # Start dev server
+npm run web            # Open in browser
+npm run ios            # iOS simulator
+npm run android        # Android emulator
+npm test               # Run tests
+npm run lint           # Lint code
+```
+
+## Troubleshooting
+
+- **Clear cache:** `npx expo start -c`
+- **Reset project:** `rm -rf node_modules package-lock.json && npm install`
+- **Check Expo status:** https://status.expo.dev/

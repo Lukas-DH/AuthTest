@@ -6,14 +6,10 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  Dimensions,
-  Platform,
   ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
-
-const boundedHeight = Dimensions.get("window").height;
 
 const Register: React.FC = () => {
   const router = useRouter();
@@ -112,73 +108,83 @@ const Register: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.formView}>
-        <Text style={styles.formTitle}>REGISTER AN ACCOUNT</Text>
+      <ScrollView contentContainerStyle={styles.formView} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Register</Text>
 
-        <Text style={styles.formLabel}>First Name</Text>
+        <Text style={styles.label}>First Name</Text>
         <TextInput
-          style={styles.formInput}
+          style={styles.input}
           onChangeText={setFirstName}
           value={firstName}
-          placeholder="Enter First Name"
+          placeholder="Enter first name"
+          placeholderTextColor="#A4D65E"
         />
 
-        <Text style={styles.formLabel}>Last Name</Text>
+        <Text style={styles.label}>Last Name</Text>
         <TextInput
-          style={styles.formInput}
+          style={styles.input}
           onChangeText={setLastName}
           value={lastName}
-          placeholder="Enter Last Name"
+          placeholder="Enter last name"
+          placeholderTextColor="#A4D65E"
         />
 
-        <Text style={styles.formLabel}>Email</Text>
+        <Text style={styles.label}>Email</Text>
         <TextInput
-          style={styles.formInput}
+          style={styles.input}
           onChangeText={setEmail}
           value={email}
-          placeholder="Enter Email"
-          inputMode="email"
+          placeholder="Enter email"
+          placeholderTextColor="#A4D65E"
+          keyboardType="email-address"
           autoCapitalize="none"
         />
 
-        <Text style={styles.formLabel}>Phone (e.g. +33612345678)</Text>
+        <Text style={styles.label}>Phone (e.g. +33612345678)</Text>
         <TextInput
-          style={styles.formInput}
+          style={styles.input}
           onChangeText={setPhone}
           value={phone}
           placeholder="+33612345678"
+          placeholderTextColor="#A4D65E"
           keyboardType="phone-pad"
           autoCapitalize="none"
         />
 
-        <Text style={styles.formLabel}>Password</Text>
+        <Text style={styles.label}>Password</Text>
         <TextInput
-          style={styles.formInput}
+          style={styles.input}
           onChangeText={setPassword}
           value={password}
-          placeholder="Enter Password"
+          placeholder="Enter password"
+          placeholderTextColor="#A4D65E"
           secureTextEntry
         />
 
-        <Text style={styles.formLabel}>Confirm Password</Text>
+        <Text style={styles.label}>Confirm Password</Text>
         <TextInput
-          style={styles.formInput}
+          style={styles.input}
           onChangeText={setPasswordConfirm}
           value={passwordConfirm}
           placeholder="Confirm your password"
+          placeholderTextColor="#A4D65E"
           secureTextEntry
         />
 
-        <TouchableOpacity onPress={registerUser} disabled={loading}>
+        <TouchableOpacity
+          style={[styles.button, loading ? styles.buttonDisabled : styles.buttonEnabled]}
+          onPress={registerUser}
+          disabled={loading}
+        >
           {loading ? (
-            <ActivityIndicator color="#004F71" style={{ paddingTop: 20 }} />
+            <ActivityIndicator color="#FFF" />
           ) : (
-            <Text style={styles.formButtonLabel}>REGISTER ACCOUNT</Text>
+            <Text style={styles.buttonText}>REGISTER ACCOUNT</Text>
           )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={cancelRegistration} disabled={loading}>
-          <Text style={styles.formButtonLabel}>CANCEL</Text>
+          <Text style={styles.cancelText}>CANCEL</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -187,53 +193,61 @@ const Register: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    height: boundedHeight,
-    ...Platform.select({
-      android: { paddingBottom: 360 },
-      ios: { paddingBottom: 160 },
-      default: { paddingBottom: 20 },
-    }),
+    flex: 1,
+    backgroundColor: "#004F71",
+    paddingHorizontal: 20,
   },
   formView: {
     alignItems: "center",
+    paddingVertical: 40,
   },
-  formTitle: {
-    fontFamily: "WorkSans-Regular",
-    fontWeight: "700",
-    ...Platform.select({
-      android: { fontSize: 20, paddingVertical: 10 },
-      ios: { fontSize: 20, paddingVertical: 10 },
-      default: { fontSize: 30, paddingVertical: 20 },
-    }),
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#A4D65E",
+    marginBottom: 20,
   },
-  formLabel: {
-    fontFamily: "WorkSans-Regular",
-    fontWeight: "500",
-    ...Platform.select({
-      android: { fontSize: 16, paddingTop: 10 },
-      ios: { fontSize: 16, paddingTop: 10 },
-      default: { fontSize: 24, paddingTop: 18 },
-    }),
+  label: {
+    alignSelf: "flex-start",
+    fontSize: 16,
+    color: "#00AB8E",
+    marginBottom: 5,
   },
-  formInput: {
-    fontFamily: "WorkSans-Regular",
-    width: 250,
-    borderWidth: 1,
-    padding: 10,
-    ...Platform.select({
-      android: { fontSize: 16 },
-      ios: { fontSize: 16 },
-      default: { fontSize: 24, width: 400 },
-    }),
+  input: {
+    width: "100%",
+    height: 45,
+    borderColor: "#0097A9",
+    borderWidth: 2,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: "#FFF",
+    color: "#004F71",
+    marginBottom: 10,
   },
-  formButtonLabel: {
-    fontFamily: "WorkSans-Regular",
-    fontWeight: "500",
-    ...Platform.select({
-      android: { fontSize: 16, paddingTop: 12 },
-      ios: { fontSize: 16, paddingTop: 12 },
-      default: { fontSize: 24, paddingTop: 20 },
-    }),
+  button: {
+    width: "100%",
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  buttonEnabled: {
+    backgroundColor: "#00AB8E",
+  },
+  buttonDisabled: {
+    backgroundColor: "#666",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  cancelText: {
+    fontSize: 14,
+    color: "#A4D65E",
+    marginTop: 4,
   },
 });
 

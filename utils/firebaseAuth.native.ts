@@ -14,5 +14,14 @@ export async function verifySmsCode(
   confirmation: ConfirmationResult,
   code: string
 ): Promise<void> {
-  await confirmation.confirm(code);
+  try {
+    await confirmation.confirm(code);
+  } catch (error: any) {
+    // On Android, auto-retrieval may have already consumed the session.
+    // If Firebase already signed the user in automatically, treat it as success.
+    if (error?.code === "auth/session-expired" && auth().currentUser) {
+      return;
+    }
+    throw error;
+  }
 }

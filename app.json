@@ -9,7 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.openivf.chu",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "googleServicesFile": "./google-services.json",

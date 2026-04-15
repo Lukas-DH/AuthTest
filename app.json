@@ -49,7 +49,12 @@
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static"
+            "extraPods": [
+              { "name": "FirebaseAuthInterop", "modular_headers": true },
+              { "name": "FirebaseAppCheckInterop", "modular_headers": true },
+              { "name": "GoogleUtilities", "modular_headers": true },
+              { "name": "RecaptchaInterop", "modular_headers": true }
+            ]
           }
         }
       ]

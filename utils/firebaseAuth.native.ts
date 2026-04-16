@@ -25,3 +25,8 @@ export async function verifySmsCode(
     throw error;
   }
 }
+
+export async function deleteFirebaseAccount(): Promise<void> {
+  const user = auth().currentUser;
+  if (user) await user.delete();
+}

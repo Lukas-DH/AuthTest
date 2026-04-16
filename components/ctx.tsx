@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import {
   sendSmsCode,
   verifySmsCode,
+  deleteFirebaseAccount,
   type ConfirmationResult,
 } from "@/utils/firebaseAuth";
 
@@ -12,6 +13,7 @@ const AuthContext = createContext<{
   signOut: () => void;
   verifyPhone: (phoneNumber: string) => Promise<void>;
   confirmSms: (code: string) => Promise<void>;
+  deleteAccount: () => Promise<void>;
   session?: string | null;
   isLoading: boolean;
   pendingPhone: string | null;
@@ -20,6 +22,7 @@ const AuthContext = createContext<{
   signOut: () => null,
   verifyPhone: () => Promise.resolve(),
   confirmSms: () => Promise.resolve(),
+  deleteAccount: () => Promise.resolve(),
   session: null,
   isLoading: false,
   pendingPhone: null,
@@ -108,6 +111,26 @@ export function SessionProvider({ children }: PropsWithChildren) {
         },
 
         signOut: () => {
+          setSession(null);
+        },
+
+        deleteAccount: async () => {
+          if (!session) throw new Error("No active session.");
+          const { jwt, user } = JSON.parse(session);
+          const response = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/api/users/${user.id}`,
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${jwt}` },
+            }
+          );
+          if (!response.ok) {
+            const body = await response.json().catch(() => ({}));
+            throw new Error(
+              body?.error?.message || "Failed to delete account from server."
+            );
+          }
+          await deleteFirebaseAccount();
           setSession(null);
         },
 

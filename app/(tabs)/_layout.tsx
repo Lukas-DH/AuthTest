@@ -59,7 +59,7 @@ export default function TabLayout() {
                 <Pressable
                   onPress={() => {
                     setMenuVisible(false);
-                    router.push("/");
+                    router.push("/profile");
                   }}
                   style={styles.menuItem}
                 >

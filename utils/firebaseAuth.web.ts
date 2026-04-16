@@ -55,3 +55,8 @@ export async function verifySmsCode(
 ): Promise<void> {
   await confirmation.confirm(code);
 }
+
+export async function deleteFirebaseAccount(): Promise<void> {
+  const user = getAuth().currentUser;
+  if (user) await user.delete();
+}

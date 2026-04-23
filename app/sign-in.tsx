@@ -5,8 +5,10 @@ import {
   Pressable,
   Switch,
   StyleSheet,
+  Linking,
 } from "react-native";
 import { Link, router } from "expo-router";
+import appJson from "@/app.json";
 import { useState } from "react";
 import { useSession } from "@/components/ctx";
 
@@ -87,20 +89,22 @@ export default function SignIn() {
           <Text style={styles.registerLink}>Register</Text>
         </Link>
       </Text>
-      <Text style={styles.or}>OR</Text>
-      <Pressable>
-        <Text style={styles.franceConnect}>Log in with France Connect</Text>
-      </Pressable>
-
       {/* Footer */}
       <Text style={styles.footerText}>
-        Need help? <Text style={styles.link}>Contact us</Text>
+        Need help?{" "}
+        <Text style={styles.link} onPress={() => Linking.openURL("mailto:predictf@open-ivf.com")}>
+          predictf@open-ivf.com
+        </Text>
       </Text>
       <Text style={styles.terms}>
-        <Text style={styles.link}>Terms of Use</Text> &{" "}
-        <Text style={styles.link}>Privacy Policy</Text>
+        <Text style={styles.link} onPress={() => Linking.openURL("https://sea-turtle-app-qfyrw.ondigitalocean.app/privacy")}>
+          Terms of Use
+        </Text>{" "}&{" "}
+        <Text style={styles.link} onPress={() => Linking.openURL("https://sea-turtle-app-qfyrw.ondigitalocean.app/privacy")}>
+          Privacy Policy
+        </Text>
       </Text>
-      <Text style={styles.version}>Version 3.5.3 (3050300)</Text>
+      <Text style={styles.version}>Version {appJson.expo.version}</Text>
     </View>
   );
 }
@@ -184,13 +188,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#A4D65E",
     marginVertical: 10,
-  },
-  franceConnect: {
-    fontSize: 16,
-    color: "#A4D65E",
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-    marginBottom: 20,
   },
   footerText: {
     fontSize: 12,

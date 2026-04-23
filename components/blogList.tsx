@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Pressable } from "react-native";
 import BlogCard from "./blogCard";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -75,6 +75,30 @@ export default function BlogList() {
             </Pressable>
           );
         })}
+      <View style={styles.referenceBox}>
+        <Text style={styles.referenceText}>
+          Les algorithmes de dépistage et de prévention de l'application ont été développés sous la supervision du Pr Nicolas Gatimel du CHU de Toulouse, France. Ils sont fondés sur une revue structurée de la littérature scientifique selon une méthodologie validée, suivie d'un consensus d'experts au sein d'une équipe multidisciplinaire (gynécologues, andrologues et biologistes de la reproduction). Toutes les recommandations et évaluations du risque mises en œuvre dans l'application découlent de ce processus fondé sur les preuves, garantissant transparence, fiabilité et pertinence clinique.
+        </Text>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  referenceBox: {
+    marginTop: 8,
+    marginHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#e2e8f0",
+    width: "100%",
+    maxWidth: 600,
+  },
+  referenceText: {
+    fontSize: 11,
+    color: "#94a3b8",
+    fontStyle: "italic",
+    lineHeight: 16,
+  },
+});

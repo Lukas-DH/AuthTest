@@ -8,9 +8,12 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
+  Linking,
 } from "react-native";
 import { useSession } from "@/components/ctx";
 import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 type UserProfile = {
   firstname?: string;
@@ -84,6 +87,10 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
+      <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={24} color="#A4D65E" />
+        <Text style={styles.backText}>Back</Text>
+      </Pressable>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>My Profile</Text>
 
@@ -98,6 +105,13 @@ export default function Profile() {
 
         <Text style={styles.label}>Phone</Text>
         <TextInput style={styles.input} value={profile.phone || "—"} editable={false} />
+
+        <Text style={styles.supportText}>
+          To update or modify your details, please contact us at{" "}
+          <Text style={styles.supportLink} onPress={() => Linking.openURL("mailto:predictf@open-ivf.com")}>
+            predictf@open-ivf.com
+          </Text>
+        </Text>
 
         <Pressable
           style={[styles.deleteButton, deleting && styles.deleteButtonDisabled]}
@@ -120,6 +134,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#004F71",
     paddingHorizontal: 20,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 52,
+    paddingBottom: 8,
+  },
+  backText: {
+    color: "#A4D65E",
+    fontSize: 16,
+    marginLeft: 6,
   },
   content: {
     paddingVertical: 40,
@@ -148,6 +173,18 @@ const styles = StyleSheet.create({
     color: "#004F71",
     marginBottom: 16,
     opacity: 0.8,
+  },
+  supportText: {
+    fontSize: 13,
+    color: "#FFF",
+    textAlign: "center",
+    marginTop: 8,
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  supportLink: {
+    color: "#A4D65E",
+    textDecorationLine: "underline",
   },
   deleteButton: {
     width: "100%",

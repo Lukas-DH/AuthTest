@@ -26,18 +26,18 @@ const Register: React.FC = () => {
   };
 
   const registerUser = async () => {
-    if (!firstName) return Alert.alert("Please enter your first name.");
-    if (!lastName) return Alert.alert("Please enter your last name.");
-    if (!email) return Alert.alert("Please enter an email.");
-    if (!phone) return Alert.alert("Please enter your phone number.");
-    if (!password) return Alert.alert("Please enter a password.");
-    if (!passwordConfirm) return Alert.alert("Please confirm your password.");
-    if (password !== passwordConfirm) return Alert.alert("Passwords do not match.");
+    if (!firstName) return Alert.alert("Veuillez saisir votre prénom.");
+    if (!lastName) return Alert.alert("Veuillez saisir votre nom.");
+    if (!email) return Alert.alert("Veuillez saisir votre adresse e-mail.");
+    if (!phone) return Alert.alert("Veuillez saisir votre numéro de téléphone.");
+    if (!password) return Alert.alert("Veuillez saisir un mot de passe.");
+    if (!passwordConfirm) return Alert.alert("Veuillez confirmer votre mot de passe.");
+    if (password !== passwordConfirm) return Alert.alert("Les mots de passe ne correspondent pas.");
 
     // Basic E.164 check — Firebase requires this format for SMS.
     if (!/^\+\d{7,15}$/.test(phone)) {
       return Alert.alert(
-        "Phone number must be in international format, e.g. +33612345678"
+        "Le numéro de téléphone doit être au format international, ex. +33612345678"
       );
     }
 

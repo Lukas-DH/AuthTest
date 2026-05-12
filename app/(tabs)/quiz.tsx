@@ -55,14 +55,15 @@ export default function QuestionnaireScreen() {
   const [femaleCompleted, setFemaleCompleted] = useState(false);
   const [scoreRisk, setScoreRisk] = useState(0);
   const [answersId, setAnswersId] = useState<string | null>(null);
-  const user = session ? JSON.parse(session).user : null;
+  const { user, jwt } = session ? JSON.parse(session) : { user: null, jwt: null };
 
   const fetchUserProgress = async () => {
     if (!user?.id) return;
     const response = await fetch(
       // `${API_URL}/xresponses?filters[users_permissions_user]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
       // `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
-      `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
+      `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`,
+      { headers: { Authorization: `Bearer ${jwt}` } }
     );
     const data = await response.json();
 
@@ -137,6 +138,7 @@ export default function QuestionnaireScreen() {
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${jwt}`);
 
       if (answersId) {
         // UPDATE existing entry
@@ -223,7 +225,10 @@ export default function QuestionnaireScreen() {
     // await fetch(`http://localhost:1337/api/xresponses`, {
     await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/xresponses`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
       body: JSON.stringify({
         data: {
           maleCompleted: false,
@@ -241,7 +246,6 @@ export default function QuestionnaireScreen() {
 
   const currentQuestion = quizJson[currentQuestionIndex];
   const isCurrentAnswerEmpty = !answers[currentQuestion?.id];
-  // const { jwt } = session ? JSON.parse(session) : { jwt: null };
 
   return (
     <>

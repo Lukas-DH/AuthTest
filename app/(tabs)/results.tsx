@@ -25,7 +25,7 @@ export default function ResultsScreen() {
 
   const { session, isLoading } = useSession();
   const router = useRouter();
-  const user = session ? JSON.parse(session).user : null;
+  const { user, jwt } = session ? JSON.parse(session) : { user: null, jwt: null };
 
   const questions = [
     { id: "F.1", label: "Quel est votre âge ?" },
@@ -49,7 +49,8 @@ export default function ResultsScreen() {
       try {
         // Fetch user responses
         const response = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`,
+          { headers: { Authorization: `Bearer ${jwt}` } }
         );
         const json = await response.json();
 

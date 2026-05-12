@@ -74,7 +74,7 @@ export default function SignIn() {
             await signIn(email, password);
             router.push("/verify-phone");
           } catch (error: any) {
-            console.error("Sign-in failed:", error);
+            console.error("Sign-in failed:", error?.message ?? error);
             alert(error?.message || "Failed to sign in. Please try again.");
           }
         }}

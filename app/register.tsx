@@ -99,7 +99,7 @@ const Register: React.FC = () => {
         { text: "OK", onPress: () => router.replace("/sign-in") },
       ]);
     } catch (error: any) {
-      console.error("Registration error:", error);
+      console.error("Registration error:", error?.message ?? error);
       Alert.alert("Registration failed", error?.message || "Please try again.");
     } finally {
       setLoading(false);

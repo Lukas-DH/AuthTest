@@ -44,8 +44,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const confirmationRef = useRef<ConfirmationResult | null>(null);
   const [pendingPhone, setPendingPhone] = useState<string | null>(null);
 
-  console.log("session " + session);
-
   return (
     <AuthContext.Provider
       value={{

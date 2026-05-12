@@ -149,7 +149,6 @@ export default function QuestionnaireScreen() {
             body: JSON.stringify({ data: answerPayload }),
           }
         );
-        console.log("Updated entry with ID:", answerPayload);
         setSelectedSex(null);
         setAnswers({});
       } else {
@@ -167,7 +166,6 @@ export default function QuestionnaireScreen() {
         setSelectedSex(null);
         setAnswersId(data.data.documentId);
         setAnswers({});
-        console.log("Updated entry with ID2:", answerPayload);
       }
       // Refresh user progress to update completion status
       await fetchUserProgress();
@@ -243,12 +241,6 @@ export default function QuestionnaireScreen() {
 
   const currentQuestion = quizJson[currentQuestionIndex];
   const isCurrentAnswerEmpty = !answers[currentQuestion?.id];
-  console.log("WHY HOIN", answers);
-  console.log(
-    session
-      ? JSON.parse(session).user.username + " " + JSON.parse(session).user.id
-      : null
-  );
   // const { jwt } = session ? JSON.parse(session) : { jwt: null };
 
   return (

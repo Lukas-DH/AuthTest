@@ -38,7 +38,7 @@ export default function BlogList() {
   }, []);
 
   if (loading) return <ActivityIndicator size="large" />;
-  console.log("posts", posts);
+  console.log("Posts loaded:", posts.length);
   return (
     <View style={{ width: '100%', alignItems: 'center' }}>
       {Array.isArray(posts) &&

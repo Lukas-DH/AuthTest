@@ -28,7 +28,7 @@ export default function VerifyPhone() {
       await verifyPhone(pendingPhone);
       setCodeSent(true);
     } catch (error: any) {
-      console.error("Send code error:", error);
+      console.error("Send code error:", error?.message ?? error);
       alert(error?.message || "Failed to send verification code.");
     } finally {
       setLoading(false);
@@ -41,7 +41,7 @@ export default function VerifyPhone() {
     try {
       await confirmSms(code);
     } catch (error: any) {
-      console.error("Verify code error:", error);
+      console.error("Verify code error:", error?.message ?? error);
       alert(error?.message || "Invalid code. Please try again.");
     } finally {
       setLoading(false);

@@ -10,22 +10,31 @@ import { FontAwesome } from "@expo/vector-icons";
 
 interface BlogCardProps {
   title: string;
-  // image: ImageSourcePropType;
   summary: string;
-  // likes: number;
   author: string;
+  audience?: string | null;
 }
 
-// function BlogCard({ title, image, summary, author }: BlogCardProps) {
-function BlogCard({ title, summary, author }: BlogCardProps) {
+const AUDIENCE_BADGES: Record<string, { label: string; backgroundColor: string }> = {
+  "Pour tout le monde": { label: "Pour tout le monde", backgroundColor: "#FFF9C4" },
+  female:               { label: "Madame",             backgroundColor: "#F3E3F9" },
+  male:                 { label: "Monsieur",           backgroundColor: "#EAF2FB" },
+};
+
+function BlogCard({ title, summary, author, audience }: BlogCardProps) {
+  const badge = audience ? AUDIENCE_BADGES[audience] : null;
   return (
     <View style={styles.outerContainer}>
       <View style={styles.card}>
-        {/* <Image source={image} style={styles.image} /> */}
         <View style={styles.content}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.summary}>{summary}</Text>
           <Text style={styles.author}>Par {author}</Text>
+          {badge && (
+            <Text style={[styles.badge, { backgroundColor: badge.backgroundColor }]}>
+              {badge.label}
+            </Text>
+          )}
           {/* <View style={styles.footer}>
             <FontAwesome name="heart" size={18} color="#A4D65E" />
             <Text style={styles.likes}>{likes}</Text>
@@ -77,6 +86,17 @@ const styles = StyleSheet.create({
   author: {
     fontSize: 12,
     color: "#0097A9",
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#065f46",
+    overflow: "hidden",
+    marginTop: 10,
   },
   footer: {
     flexDirection: "row",

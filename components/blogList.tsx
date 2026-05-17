@@ -71,6 +71,7 @@ export default function BlogList() {
                 title={post.title}
                 summary={post.summary}
                 author={post.author || ""}
+                audience={post.content}
               />
             </Pressable>
           );

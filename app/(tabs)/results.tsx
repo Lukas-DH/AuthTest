@@ -49,13 +49,16 @@ export default function ResultsScreen() {
       try {
         // Fetch user responses
         const response = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`,
+          `${process.env.EXPO_PUBLIC_API_URL}/api/users/me?populate=xresponses`,
           { headers: { Authorization: `Bearer ${jwt}` } }
         );
         const json = await response.json();
+        const xresponses = (json.xresponses || []).sort(
+          (a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
 
-        if (json.data && json.data.length > 0) {
-          const latest = json.data[0];
+        if (xresponses.length > 0) {
+          const latest = xresponses[0];
           const male = latest.answerMale || {};
           const female = latest.answerFemale || {};
           setAnswers({ male, female });

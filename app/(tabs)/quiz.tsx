@@ -60,18 +60,18 @@ export default function QuestionnaireScreen() {
   const fetchUserProgress = async () => {
     if (!user?.id) return;
     const response = await fetch(
-      // `${API_URL}/xresponses?filters[users_permissions_user]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
-      // `http://localhost:1337/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`
-      `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses?filters[users_permissions_user][id][$eq]=${user.id}&sort=updatedAt:desc&pagination[limit]=1`,
+      `${process.env.EXPO_PUBLIC_API_URL}/api/users/me?populate=xresponses`,
       { headers: { Authorization: `Bearer ${jwt}` } }
     );
     const data = await response.json();
-
-    if (data.data?.[0]) {
-      const userResponse = data.data[0];
-      setAnswersId(userResponse.documentId); // Store the ID
-      setMaleCompleted(userResponse.maleCompleted || false);
-      setFemaleCompleted(userResponse.femaleCompleted || false);
+    const xresponses = (data.xresponses || []).sort(
+      (a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+    const latest = xresponses[0];
+    if (latest) {
+      setAnswersId(latest.documentId);
+      setMaleCompleted(latest.maleCompleted || false);
+      setFemaleCompleted(latest.femaleCompleted || false);
     }
   };
   // console.log("selectedSex", selectedSex);
@@ -132,7 +132,6 @@ export default function QuestionnaireScreen() {
     const answerPayload = {
       [currentSex === "male" ? "answerMale" : "answerFemale"]: answers,
       [`${currentSex}Completed`]: true,
-      users_permissions_user: { connect: [{ id: user.id }] },
     };
 
     try {
@@ -140,30 +139,33 @@ export default function QuestionnaireScreen() {
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Authorization", `Bearer ${jwt}`);
 
+      const body = JSON.stringify({ data: answerPayload });
+
       if (answersId) {
         // UPDATE existing entry
-        // await fetch(`http://localhost:1337/api/xresponses/${answersId}`, {
         await fetch(
           `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses/${answersId}`,
           {
             headers: myHeaders,
             method: "PUT",
-            body: JSON.stringify({ data: answerPayload }),
+            body,
           }
         );
         setSelectedSex(null);
         setAnswers({});
       } else {
         // CREATE new entry
-        // const response = await fetch(`http://localhost:1337/api/xresponses`, {
         const response = await fetch(
           `${process.env.EXPO_PUBLIC_API_URL}/api/xresponses`,
           {
             headers: myHeaders,
             method: "POST",
-            body: JSON.stringify({ data: answerPayload }),
+            body,
           }
         );
+        if (!response.ok) {
+          throw new Error(`Failed to create response: ${response.status}`);
+        }
         const data = await response.json();
         setSelectedSex(null);
         setAnswersId(data.data.documentId);
@@ -235,7 +237,6 @@ export default function QuestionnaireScreen() {
           femaleCompleted: false,
           answerMale: {},
           answerFemale: {},
-          users_permissions_user: { connect: [{ id: user.id }] },
         },
       }),
     });

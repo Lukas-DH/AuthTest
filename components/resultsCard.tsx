@@ -3,17 +3,21 @@ import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 
-// Define the AssessmentResult interface
+interface FactorItem {
+  documentId: string;
+  name: string;
+  description: string;
+  pdfUrl?: string | null;
+}
+
 interface AssessmentResult {
   riskLevel: "pas de risque élevé" | "élevé";
-  description?: string; // Optional description for the result
+  description?: string;
   factors: {
-    documentId: string;
-    name: string;
-    description: string;
-    pdfUrl?: string | null;
-  }[];
-  // advice: string[];
+    general: FactorItem[];
+    female: FactorItem[];
+    male: FactorItem[];
+  };
   nextSteps: string[];
 }
 
@@ -24,17 +28,74 @@ interface ResultsCardProps {
   onScheduleReminder: () => void;
 }
 
+function FactorCard({ factor }: { factor: FactorItem }) {
+  return (
+    <Pressable
+      key={factor.documentId}
+      style={({ pressed }) => [styles.factor, pressed && styles.factorPressed]}
+      onPress={async () => {
+        if (factor.pdfUrl) {
+          try {
+            await WebBrowser.openBrowserAsync(factor.pdfUrl);
+          } catch (error) {
+            console.error("Error opening PDF:", error);
+          }
+        }
+      }}
+      disabled={!factor.pdfUrl}
+    >
+      <View style={styles.factorHeader}>
+        <Text style={styles.factorName}>{factor.name}</Text>
+        {factor.pdfUrl && (
+          <Ionicons name="document-text" size={20} color="#047857" />
+        )}
+      </View>
+      <Text style={styles.factorDescription}>{factor.description}</Text>
+      {factor.pdfUrl && (
+        <Text style={styles.tapHint}>Appuyez pour ouvrir le PDF</Text>
+      )}
+    </Pressable>
+  );
+}
+
+function AdviceSection({
+  label,
+  badgeStyle,
+  items,
+}: {
+  label: string;
+  badgeStyle?: object;
+  items: FactorItem[];
+}) {
+  return (
+    <View style={styles.adviceSection}>
+      <View style={styles.sectionLabelRow}>
+        {badgeStyle ? (
+          <Text style={[styles.audienceBadge, badgeStyle]}>{label}</Text>
+        ) : (
+          <Text style={styles.sectionTitle}>{label}</Text>
+        )}
+      </View>
+      {items.length === 0 ? (
+        <View style={styles.naCard}>
+          <Text style={styles.naText}>Aucun conseil spécifique</Text>
+        </View>
+      ) : (
+        items.map((factor) => <FactorCard key={factor.documentId} factor={factor} />)
+      )}
+    </View>
+  );
+}
+
 export function ResultsCard({
   result,
   assessmentDate,
-  nextAssessmentDate,
   onScheduleReminder,
 }: ResultsCardProps) {
   const getBadgeStyle = (level: "pas de risque élevé" | "élevé") => {
     switch (level) {
       case "pas de risque élevé":
         return [styles.riskBadge, { backgroundColor: "#d1fae5", color: "#065f46" }];
-
       case "élevé":
         return [styles.riskBadge, { backgroundColor: "#fee2e2", color: "#991b1b" }];
       default:
@@ -46,62 +107,37 @@ export function ResultsCard({
     <ScrollView contentContainerStyle={styles.card}>
       <View style={styles.header}>
         <Text style={styles.title}>
-          Résultat PREDICT-F pour la détection d’un risque élevé d’infertilité
+          Résultat PREDICT-F pour la détection d'un risque élevé d'infertilité
         </Text>
         <Text style={getBadgeStyle(result.riskLevel)}>
-          {result.riskLevel == "élevé"
+          {result.riskLevel === "élevé"
             ? "risque élevé detecté"
             : "pas de risque élevé détecté"}
         </Text>
-        {/* <Text style={getBadgeStyle(result.riskLevel)}>{result.riskLevel}</Text> */}
-        <Text style={styles.description}>
-          {result.description}
-          {/* Veuillez consulter les fiches conseils personnalisées afin d’améliorer
-          votre fertilité spontanée. En cas d’absence de grossesse après au
-          moins 12 mois d’essai, veuillez consulter un médecin spécialiste de
-          l’infertilité au CHU de Toulouse 05 67 77 11 02 */}
-          {/* {assessmentDate.toDateString()} */}
-        </Text>
+        <Text style={styles.description}>{result.description}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          {/* <Ionicons name="warning" size={18} color="orange" /> */}
-          📋 Conseils personnalisés
-        </Text>
+        <Text style={styles.sectionTitle}>📋 Conseils personnalisés</Text>
         <Text style={styles.factorDescription}>
           Cliquez ci-dessous pour en savoir plus👇
         </Text>
-        {result.factors.map((factor, idx) => (
-          <Pressable
-            key={factor.documentId}
-            style={({ pressed }) => [
-              styles.factor,
-              pressed && styles.factorPressed,
-            ]}
-            onPress={async () => {
-              if (factor.pdfUrl) {
-                try {
-                  await WebBrowser.openBrowserAsync(factor.pdfUrl);
-                } catch (error) {
-                  console.error("Error opening PDF:", error);
-                }
-              }
-            }}
-            disabled={!factor.pdfUrl}
-          >
-            <View style={styles.factorHeader}>
-              <Text style={styles.factorName}>{factor.name}</Text>
-              {factor.pdfUrl && (
-                <Ionicons name="document-text" size={20} color="#047857" />
-              )}
-            </View>
-            <Text style={styles.factorDescription}>{factor.description}</Text>
-            {factor.pdfUrl && (
-              <Text style={styles.tapHint}>Appuyez pour ouvrir le PDF</Text>
-            )}
-          </Pressable>
-        ))}
+
+        <AdviceSection
+          label="Pour tout le monde"
+          badgeStyle={{ backgroundColor: "#FFF9C4", color: "#065f46" }}
+          items={result.factors.general}
+        />
+        <AdviceSection
+          label="Madame"
+          badgeStyle={{ backgroundColor: "#F3E3F9", color: "#065f46" }}
+          items={result.factors.female}
+        />
+        <AdviceSection
+          label="Monsieur"
+          badgeStyle={{ backgroundColor: "#EAF2FB", color: "#065f46" }}
+          items={result.factors.male}
+        />
       </View>
 
       <View style={styles.referenceBox}>
@@ -135,20 +171,8 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    // color: "#475569",
     color: "green",
-    // make bold
     fontWeight: "600",
-    marginTop: 4,
-  },
-  badge: {
-    alignSelf: "flex-start",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 12,
-    fontSize: 12,
-    fontWeight: "500",
-    overflow: "hidden",
     marginTop: 4,
   },
   riskBadge: {
@@ -171,6 +195,21 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#0f172a",
     marginBottom: 6,
+  },
+  adviceSection: {
+    marginTop: 14,
+  },
+  sectionLabelRow: {
+    marginBottom: 8,
+  },
+  audienceBadge: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    fontSize: 14,
+    fontWeight: "600",
+    overflow: "hidden",
   },
   factor: {
     borderWidth: 1,
@@ -198,18 +237,19 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginTop: 4,
   },
-  recommendationTitle: { fontWeight: "500", marginTop: 4 },
-  recommendationText: { fontSize: 14, color: "#1f2937" },
-  textItem: { fontSize: 14, color: "#1f2937", marginBottom: 4 },
-  assessmentBox: {
-    backgroundColor: "#ecfdf5",
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 10,
-    borderColor: "#a7f3d0",
+  naCard: {
     borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: "#f8fafc",
   },
-  assessmentText: { color: "#065f46", fontSize: 14 },
+  naText: {
+    fontSize: 14,
+    color: "#94a3b8",
+    fontStyle: "italic",
+  },
   referenceBox: {
     marginTop: 16,
     paddingTop: 12,
@@ -221,37 +261,5 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     fontStyle: "italic",
     lineHeight: 16,
-  },
-  footer: { flexDirection: "row", justifyContent: "flex-end", marginTop: 10 },
-  button: {
-    backgroundColor: "#059669",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  buttonPressed: {
-    backgroundColor: "#047857",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  icon: {
-    marginLeft: 8,
-  },
-  downloadButton: {
-    backgroundColor: "#3b82f6",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  downloadButtonPressed: {
-    backgroundColor: "#2563eb",
   },
 });

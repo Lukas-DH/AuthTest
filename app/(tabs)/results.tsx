@@ -21,7 +21,8 @@ export default function ResultsScreen() {
   const [score, setScore] = useState(0);
   const [maleCompleted, setMaleCompleted] = useState(false);
   const [femaleCompleted, setFemaleCompleted] = useState(false);
-  const [adviceFactors, setAdviceFactors] = useState<any[]>([]);
+  type FactorItem = { documentId: string; name: string; description: string; pdfUrl: string | null };
+  const [adviceFactors, setAdviceFactors] = useState<{ general: FactorItem[]; female: FactorItem[]; male: FactorItem[] }>({ general: [], female: [], male: [] });
 
   const { session, isLoading } = useSession();
   const router = useRouter();
@@ -74,17 +75,20 @@ export default function ResultsScreen() {
           );
           const postsJson = await postsResponse.json();
 
-          // Match posts with the generated titles
-          const matchedPosts = postsJson.data
-            .filter((post: any) => postTitles.includes(post.title))
-            .map((post: any) => ({
-              documentId: post.documentId,
-              name: post.title,
-              description: post.summary,
-              pdfUrl: post.image?.url || null,
-            }));
+          const mapPost = (post: any): FactorItem => ({
+            documentId: post.documentId,
+            name: post.title,
+            description: post.summary,
+            pdfUrl: post.image?.url || null,
+          });
 
-          setAdviceFactors(matchedPosts);
+          const filtered = postsJson.data.filter((post: any) => postTitles.includes(post.title));
+
+          setAdviceFactors({
+            general: filtered.filter((p: any) => p.content === 'Pour tout le monde').map(mapPost),
+            female:  filtered.filter((p: any) => p.content === 'female').map(mapPost),
+            male:    filtered.filter((p: any) => p.content === 'male').map(mapPost),
+          });
 
           const maleScore = male.score ? parseInt(male.score, 10) : 0;
           const femaleScore = female.score ? parseInt(female.score, 10) : 0;

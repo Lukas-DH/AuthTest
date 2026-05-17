@@ -3,7 +3,6 @@ import {
   View,
   TextInput,
   Pressable,
-  Switch,
   StyleSheet,
   Linking,
 } from "react-native";
@@ -16,7 +15,6 @@ export default function SignIn() {
   const { signIn } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -50,17 +48,6 @@ export default function SignIn() {
       <Pressable>
         <Text style={styles.link}>Forgot your password?</Text>
       </Pressable>
-
-      {/* Remember Me Toggle */}
-      <View style={styles.rememberContainer}>
-        <Switch
-          value={rememberMe}
-          onValueChange={setRememberMe}
-          thumbColor={rememberMe ? "#00AB8E" : "#CCC"}
-          trackColor={{ false: "#999", true: "#A4D65E" }}
-        />
-        <Text style={styles.rememberText}>Remember my username</Text>
-      </View>
 
       {/* Connect Button */}
       <Pressable
@@ -145,17 +132,6 @@ const styles = StyleSheet.create({
     color: "#A4D65E", // Light green links
     alignSelf: "flex-end",
     marginBottom: 15,
-  },
-  rememberContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    marginBottom: 20,
-  },
-  rememberText: {
-    fontSize: 16,
-    color: "#FFF", // White text
-    marginLeft: 8,
   },
   button: {
     width: "100%",

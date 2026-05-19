@@ -5,19 +5,58 @@ import {
   Pressable,
   StyleSheet,
   Linking,
+  Modal,
 } from "react-native";
 import { Link, router } from "expo-router";
 import appJson from "@/app.json";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "@/components/ctx";
 
 export default function SignIn() {
   const { signIn } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [supportEmail, setSupportEmail] = useState("predictf@open-ivf.com");
+  const [supportInstruction, setSupportInstruction] = useState("");
+  const [showSupport, setShowSupport] = useState(false);
+
+  useEffect(() => {
+    fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/supports`)
+      .then((r) => r.json())
+      .then((json) => {
+        const first = json?.data?.[0];
+        if (first?.email) setSupportEmail(first.email);
+        if (first?.instruction) setSupportInstruction(first.instruction);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <View style={styles.container}>
+      <Modal
+        visible={showSupport}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSupport(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setShowSupport(false)}>
+          <Pressable style={styles.modalBox} onPress={() => {}}>
+            <Text style={styles.modalTitle}>Besoin d'aide ?</Text>
+            {supportInstruction ? (
+              <Text style={styles.modalInstruction}>{supportInstruction}</Text>
+            ) : null}
+            <Text
+              style={styles.modalEmail}
+              onPress={() => Linking.openURL(`mailto:${supportEmail}`)}
+            >
+              {supportEmail}
+            </Text>
+            <Pressable style={styles.modalClose} onPress={() => setShowSupport(false)}>
+              <Text style={styles.modalCloseText}>Fermer</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
       <Text style={styles.title}>Connexion</Text>
 
       {/* Username Field */}
@@ -31,7 +70,7 @@ export default function SignIn() {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      <Pressable>
+      <Pressable onPress={() => setShowSupport(true)}>
         <Text style={styles.link}>Identifiant oublié ?</Text>
       </Pressable>
 
@@ -45,7 +84,7 @@ export default function SignIn() {
         placeholderTextColor="#A4D65E"
         secureTextEntry
       />
-      <Pressable>
+      <Pressable onPress={() => setShowSupport(true)}>
         <Text style={styles.link}>Mot de passe oublié ?</Text>
       </Pressable>
 
@@ -79,8 +118,8 @@ export default function SignIn() {
       {/* Footer */}
       <Text style={styles.footerText}>
         Besoin d'aide ?{" "}
-        <Text style={styles.link} onPress={() => Linking.openURL("mailto:predictf@open-ivf.com")}>
-          predictf@open-ivf.com
+        <Text style={styles.link} onPress={() => Linking.openURL(`mailto:${supportEmail}`)}>
+          {supportEmail}
         </Text>
       </Text>
       <Text style={styles.terms}>
@@ -180,5 +219,48 @@ const styles = StyleSheet.create({
   version: {
     fontSize: 12,
     color: "#A4D65E",
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalBox: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 24,
+    width: "100%",
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#004F71",
+    marginBottom: 12,
+  },
+  modalInstruction: {
+    fontSize: 14,
+    color: "#475569",
+    lineHeight: 22,
+    marginBottom: 14,
+  },
+  modalEmail: {
+    fontSize: 15,
+    color: "#00AB8E",
+    fontWeight: "600",
+    marginBottom: 20,
+  },
+  modalClose: {
+    backgroundColor: "#004F71",
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  modalCloseText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 15,
   },
 });

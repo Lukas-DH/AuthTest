@@ -18,35 +18,35 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
+      <Text style={styles.title}>Connexion</Text>
 
       {/* Username Field */}
-      <Text style={styles.label}>Username</Text>
+      <Text style={styles.label}>Adresse e-mail</Text>
       <TextInput
         style={styles.input}
         value={email}
         onChangeText={setEmail}
-        placeholder="Enter your email"
+        placeholder="Entrez votre adresse e-mail"
         placeholderTextColor="#A4D65E"
         keyboardType="email-address"
         autoCapitalize="none"
       />
       <Pressable>
-        <Text style={styles.link}>Forgot your username?</Text>
+        <Text style={styles.link}>Identifiant oublié ?</Text>
       </Pressable>
 
       {/* Password Field */}
-      <Text style={styles.label}>Password</Text>
+      <Text style={styles.label}>Mot de passe</Text>
       <TextInput
         style={styles.input}
         value={password}
         onChangeText={setPassword}
-        placeholder="Enter your password"
+        placeholder="Entrez votre mot de passe"
         placeholderTextColor="#A4D65E"
         secureTextEntry
       />
       <Pressable>
-        <Text style={styles.link}>Forgot your password?</Text>
+        <Text style={styles.link}>Mot de passe oublié ?</Text>
       </Pressable>
 
       {/* Connect Button */}
@@ -62,33 +62,33 @@ export default function SignIn() {
             router.push("/verify-phone");
           } catch (error: any) {
             console.error("Sign-in failed:", error?.message ?? error);
-            alert(error?.message || "Failed to sign in. Please try again.");
+            alert(error?.message || "Échec de la connexion. Veuillez réessayer.");
           }
         }}
       >
-        <Text style={styles.buttonText}>CONNECT</Text>
+        <Text style={styles.buttonText}>SE CONNECTER</Text>
       </Pressable>
 
       {/* Register & Alternative Login */}
       <Text style={styles.registerText}>
-        No account yet?{" "}
+        Pas encore de compte ?{" "}
         <Link href="/register">
-          <Text style={styles.registerLink}>Register</Text>
+          <Text style={styles.registerLink}>S'inscrire</Text>
         </Link>
       </Text>
       {/* Footer */}
       <Text style={styles.footerText}>
-        Need help?{" "}
+        Besoin d'aide ?{" "}
         <Text style={styles.link} onPress={() => Linking.openURL("mailto:predictf@open-ivf.com")}>
           predictf@open-ivf.com
         </Text>
       </Text>
       <Text style={styles.terms}>
         <Text style={styles.link} onPress={() => Linking.openURL("https://sea-turtle-app-qfyrw.ondigitalocean.app/privacy")}>
-          Terms of Use
+          Conditions d'utilisation
         </Text>{" "}&{" "}
         <Text style={styles.link} onPress={() => Linking.openURL("https://sea-turtle-app-qfyrw.ondigitalocean.app/privacy")}>
-          Privacy Policy
+          Politique de confidentialité
         </Text>
       </Text>
       <Text style={styles.version}>Version {appJson.expo.version}</Text>

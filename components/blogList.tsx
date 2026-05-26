@@ -8,36 +8,44 @@ import type { Post } from "@/types/post";
 export default function BlogList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
+      setFetchError(false);
       try {
         let res = await fetch(
           `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`
         );
-        // if (!res.ok) throw new Error("Primary API failed");
         let json = await res.json();
         setPosts(json.data);
       } catch (error) {
-        console.warn("Falling back to localhost:", error);
-        // try {
-        //   let res = await fetch(
-        //     "http://localhost:1337/api/posts?populate=image"
-        //   );
-        //   let json = await res.json();
-        //   setPosts(json.data);
-        // } catch (err) {
-        //   console.error("Failed to fetch from both APIs", err);
-        // }
+        console.warn("Failed to fetch posts:", error);
+        setFetchError(true);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPosts();
-  }, []);
+  }, [retryKey]);
 
-  if (loading) return <ActivityIndicator size="large" />;
+  if (loading) return <ActivityIndicator size="large" color="#047857" style={{ marginTop: 40 }} />;
+
+  if (fetchError) {
+    return (
+      <View style={{ alignItems: "center", paddingTop: 40 }}>
+        <Text style={styles.errorText}>
+          Impossible de charger les articles. Vérifiez votre connexion internet.
+        </Text>
+        <Pressable style={styles.retryButton} onPress={() => setRetryKey(k => k + 1)}>
+          <Text style={styles.retryButtonText}>Réessayer</Text>
+        </Pressable>
+      </View>
+    );
+  }
   console.log("Posts loaded:", posts.length);
   return (
     <View style={{ width: '100%', alignItems: 'center' }}>
@@ -101,5 +109,23 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     fontStyle: "italic",
     lineHeight: 16,
+  },
+  errorText: {
+    fontSize: 15,
+    color: "#475569",
+    textAlign: "center",
+    marginBottom: 16,
+    lineHeight: 22,
+    paddingHorizontal: 20,
+  },
+  retryButton: {
+    backgroundColor: "#047857",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });

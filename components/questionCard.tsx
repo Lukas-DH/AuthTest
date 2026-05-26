@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   GestureResponderEvent,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
@@ -18,6 +19,7 @@ interface QuestionCardProps {
   onBack?: () => void;
   isLastQuestion?: boolean;
   nextDisabled?: boolean;
+  isSubmitting?: boolean;
 }
 
 export default function QuestionCard({
@@ -29,6 +31,7 @@ export default function QuestionCard({
   sex,
   isLastQuestion,
   nextDisabled,
+  isSubmitting,
 }: QuestionCardProps) {
   return (
     <View style={styles.card}>
@@ -66,6 +69,9 @@ export default function QuestionCard({
           <Text style={styles.buttonText}>
             {isLastQuestion ? "Soumettre" : "Suivant"}
           </Text>
+          {isLastQuestion && isSubmitting && (
+            <ActivityIndicator size="small" color="#fff" style={styles.icon} />
+          )}
         </Pressable>
       )}
       {onBack && (

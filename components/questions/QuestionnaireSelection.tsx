@@ -5,6 +5,7 @@ import {
   Pressable,
   StyleSheet,
   GestureResponderEvent,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 
@@ -15,6 +16,7 @@ interface QuestionnaireSelectionProps {
   femaleCompleted: boolean;
   onNext?: (event: GestureResponderEvent) => void;
   onRestart?: () => void;
+  retaking?: boolean;
 }
 
 export default function QuestionnaireSelection({
@@ -24,6 +26,7 @@ export default function QuestionnaireSelection({
   femaleCompleted,
   onNext,
   onRestart,
+  retaking = false,
 }: QuestionnaireSelectionProps) {
   const bothCompleted = maleCompleted && femaleCompleted;
 
@@ -39,7 +42,7 @@ export default function QuestionnaireSelection({
       </View>
       <View style={styles.content}>
         <Text style={styles.description}>
-          L’évaluation vous prendra environ 10 à 15 minutes et inclut des
+          L'évaluation vous prendra environ 10 à 15 minutes et inclut des
           questions sur :{/* {"\n\n"}• Sur votre santé en général */}
           {"\n"}• Vos modes de vie.
           {"\n"}• Vos antécédents médicaux.
@@ -164,23 +167,22 @@ export default function QuestionnaireSelection({
         </View>
       )}
       {onRestart && (
-        // <View style={styles.footer}>
         <Pressable
           onPress={onRestart}
+          disabled={retaking}
           style={({ pressed }) => [
             styles.button,
             pressed && styles.buttonPressed,
+            retaking && { opacity: 0.7 },
           ]}
         >
           <Text style={styles.buttonText}>Recommencer le questionnaire</Text>
-          <Feather
-            name="refresh-ccw"
-            size={16}
-            color="#FFF"
-            style={styles.icon}
-          />
+          {retaking ? (
+            <ActivityIndicator size="small" color="#FFF" style={styles.icon} />
+          ) : (
+            <Feather name="refresh-ccw" size={16} color="#FFF" style={styles.icon} />
+          )}
         </Pressable>
-        // </View>
       )}
     </View>
   );

@@ -18,6 +18,7 @@ import {
   StyleSheet,
   Linking,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionnaireSelection from "@/components/questions/QuestionnaireSelection";
@@ -55,26 +56,38 @@ export default function QuestionnaireScreen() {
   const [femaleCompleted, setFemaleCompleted] = useState(false);
   const [scoreRisk, setScoreRisk] = useState(0);
   const [answersId, setAnswersId] = useState<string | null>(null);
+  const [progressLoading, setProgressLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [retaking, setRetaking] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const { user, jwt } = session
     ? JSON.parse(session)
     : { user: null, jwt: null };
 
   const fetchUserProgress = async () => {
     if (!user?.id) return;
-    const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/api/users/me?populate=xresponses`,
-      { headers: { Authorization: `Bearer ${jwt}` } },
-    );
-    const data = await response.json();
-    const xresponses = (data.xresponses || []).sort(
-      (a: any, b: any) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
-    const latest = xresponses[0];
-    if (latest) {
-      setAnswersId(latest.documentId);
-      setMaleCompleted(latest.maleCompleted || false);
-      setFemaleCompleted(latest.femaleCompleted || false);
+    setProgressLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/users/me?populate=xresponses`,
+        { headers: { Authorization: `Bearer ${jwt}` } },
+      );
+      const data = await response.json();
+      const xresponses = (data.xresponses || []).sort(
+        (a: any, b: any) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      );
+      const latest = xresponses[0];
+      if (latest) {
+        setAnswersId(latest.documentId);
+        setMaleCompleted(latest.maleCompleted || false);
+        setFemaleCompleted(latest.femaleCompleted || false);
+      }
+    } catch {
+      // network error — don't throw, caller handles feedback if needed
+    } finally {
+      setProgressLoading(false);
     }
   };
   // console.log("selectedSex", selectedSex);
@@ -95,6 +108,7 @@ export default function QuestionnaireScreen() {
 
     const fetchQuiz = async () => {
       setLoading(true);
+      setFetchError(null); // Clear any stale error from a previous attempt
       setCurrentQuestionIndex(0); // Reset question index
       try {
         const res = await fetch(
@@ -109,6 +123,7 @@ export default function QuestionnaireScreen() {
         );
       } catch (error) {
         console.error("Failed to fetch quiz:", error);
+        setFetchError("Impossible de charger le questionnaire. Vérifiez votre connexion internet.");
       } finally {
         setLoading(false);
       }
@@ -128,17 +143,14 @@ export default function QuestionnaireScreen() {
     answers["score"] = score.toString();
     setScoreRisk(score);
     const isHighRisk = score >= 1;
-    // setIsAtRisk(isHighRisk);
-    // setRiskyResponses(isHighRisk ? quizJson.map((q) => q.label) : []);
-    setShowOnboarding(true);
-
-    // console.log("[submit] user.id:", user?.id, "user.documentId:", user?.documentId);
 
     const answerPayload = {
       [currentSex === "male" ? "answerMale" : "answerFemale"]: answers,
       [`${currentSex}Completed`]: true,
     };
 
+    setSubmitError(null);
+    setSubmitting(true);
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -179,8 +191,12 @@ export default function QuestionnaireScreen() {
       }
       // Refresh user progress to update completion status
       await fetchUserProgress();
+      setShowOnboarding(true);
     } catch (error) {
       console.error("Failed to submit answers:", error);
+      setSubmitError("Impossible d'enregistrer vos réponses. Vérifiez votre connexion internet et réessayez.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -203,52 +219,43 @@ export default function QuestionnaireScreen() {
     // setAnswersId(null);
     setShowOnboarding(true);
     setAnswers({});
-    // setIsSubmitted(false);
-    // setIsAtRisk(false);
-    // setRiskyResponses([]);
     setCurrentQuestionIndex(0);
-    // setMaleCompleted(false);
-    // setFemaleCompleted(false);
-
     setSelectedSex(null);
     setScoreRisk(0);
-    // Actually reset the database record
-    // await fetch(`http://localhost:1337/api/xresponses`, {
+    setFetchError(null);
+    setSubmitError(null);
   };
 
   const handleRetake = async () => {
     setAnswersId(null);
     setShowOnboarding(true);
     setAnswers({});
-    // setIsSubmitted(false);
-    // setIsAtRisk(false);
-    // setRiskyResponses([]);
     setCurrentQuestionIndex(0);
-    // setMaleCompleted(false);
-    // setFemaleCompleted(false);
-
     setSelectedSex(null);
     setScoreRisk(0);
-    // Actually reset the database record
-    // await fetch(`http://localhost:1337/api/xresponses`, {
-    await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/xresponses`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
-      },
-      body: JSON.stringify({
-        data: {
-          maleCompleted: false,
-          femaleCompleted: false,
-          answerMale: {},
-          answerFemale: {},
+    setRetaking(true);
+    try {
+      await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/xresponses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
         },
-      }),
-    });
-
-    // Then fetch will get the reset values
-    fetchUserProgress();
+        body: JSON.stringify({
+          data: {
+            maleCompleted: false,
+            femaleCompleted: false,
+            answerMale: {},
+            answerFemale: {},
+          },
+        }),
+      });
+      await fetchUserProgress();
+    } catch (error) {
+      console.error("Failed to retake:", error);
+    } finally {
+      setRetaking(false);
+    }
   };
 
   const currentQuestion = quizJson[currentQuestionIndex];
@@ -259,18 +266,22 @@ export default function QuestionnaireScreen() {
       {showOnboarding ? (
         <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.title}>Questionnaire d'auto-évaluation</Text>
-          <QuestionnaireSelection
-            onSelectQuestionnaire={(sex) => {
-              setSelectedSex(sex);
-              setShowOnboarding(false);
-            }}
-            onViewResults={() => router.push("/results")}
-            maleCompleted={maleCompleted}
-            femaleCompleted={femaleCompleted}
-            // buttonText="Commencer"
-            onNext={() => setShowOnboarding(false)}
-            onRestart={handleRetake}
-          />
+          {progressLoading ? (
+            <ActivityIndicator size="large" color="#059669" style={{ marginTop: 40 }} />
+          ) : (
+            <QuestionnaireSelection
+              onSelectQuestionnaire={(sex) => {
+                setSelectedSex(sex);
+                setShowOnboarding(false);
+              }}
+              onViewResults={() => router.push("/results")}
+              maleCompleted={maleCompleted}
+              femaleCompleted={femaleCompleted}
+              onNext={() => setShowOnboarding(false)}
+              onRestart={handleRetake}
+              retaking={retaking}
+            />
+          )}
         </ScrollView>
       ) : (
         <KeyboardAvoidingView
@@ -285,8 +296,18 @@ export default function QuestionnaireScreen() {
           })}
         >
           <ScrollView contentContainerStyle={styles.container}>
-            {loading || !currentQuestion ? (
-              <Text style={styles.title}>Chargement du questionnaire...</Text>
+            {fetchError ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{fetchError}</Text>
+                <Pressable
+                  style={styles.button}
+                  onPress={handleCancel}
+                >
+                  <Text style={styles.buttonText}>Retour</Text>
+                </Pressable>
+              </View>
+            ) : loading || !currentQuestion ? (
+              <ActivityIndicator size="large" color="#059669" style={{ marginTop: 40 }} />
             ) : (
               // !isSubmitted ?
               <>
@@ -344,7 +365,8 @@ export default function QuestionnaireScreen() {
                       : undefined
                   }
                   isLastQuestion={currentQuestionIndex === quizJson.length - 1}
-                  nextDisabled={isCurrentAnswerEmpty}
+                  nextDisabled={isCurrentAnswerEmpty || submitting}
+                  isSubmitting={submitting}
                 >
                   <Text style={styles.question}>{currentQuestion.label}</Text>
                   <QuestionRenderer
@@ -358,6 +380,9 @@ export default function QuestionnaireScreen() {
                   />
                 </QuestionCard>
 
+                {submitError && (
+                  <Text style={styles.submitErrorText}>{submitError}</Text>
+                )}
                 <Pressable
                   style={({ pressed }) => [
                     styles.button,
@@ -448,6 +473,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#475569",
     marginTop: 10,
+    lineHeight: 20,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 15,
+    color: "#475569",
+    textAlign: "center",
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  submitErrorText: {
+    fontSize: 14,
+    color: "#b91c1c",
+    textAlign: "center",
+    marginTop: 16,
     lineHeight: 20,
   },
 });

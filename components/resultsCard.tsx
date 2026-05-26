@@ -81,7 +81,9 @@ function AdviceSection({
           <Text style={styles.naText}>Aucun conseil spécifique</Text>
         </View>
       ) : (
-        items.map((factor) => <FactorCard key={factor.documentId} factor={factor} />)
+        items.map((factor) => (
+          <FactorCard key={factor.documentId} factor={factor} />
+        ))
       )}
     </View>
   );
@@ -95,9 +97,15 @@ export function ResultsCard({
   const getBadgeStyle = (level: "pas de risque élevé" | "élevé") => {
     switch (level) {
       case "pas de risque élevé":
-        return [styles.riskBadge, { backgroundColor: "#d1fae5", color: "#065f46" }];
+        return [
+          styles.riskBadge,
+          { backgroundColor: "#d1fae5", color: "#065f46" },
+        ];
       case "élevé":
-        return [styles.riskBadge, { backgroundColor: "#fee2e2", color: "#991b1b" }];
+        return [
+          styles.riskBadge,
+          { backgroundColor: "#fee2e2", color: "#991b1b" },
+        ];
       default:
         return styles.riskBadge;
     }
@@ -123,26 +131,49 @@ export function ResultsCard({
           Cliquez ci-dessous pour en savoir plus👇
         </Text>
 
-        <AdviceSection
-          label="Pour tout le monde"
-          badgeStyle={{ backgroundColor: "#FFF9C4", color: "#065f46" }}
-          items={result.factors.general}
-        />
-        <AdviceSection
-          label="Madame"
-          badgeStyle={{ backgroundColor: "#F3E3F9", color: "#065f46" }}
-          items={result.factors.female}
-        />
-        <AdviceSection
-          label="Monsieur"
-          badgeStyle={{ backgroundColor: "#EAF2FB", color: "#065f46" }}
-          items={result.factors.male}
-        />
+        {result.riskLevel === "élevé" ? (
+          <View style={styles.highRiskBox}>
+            <Text style={styles.highRiskIcon}>⚠️</Text>
+            <Text style={styles.highRiskMessage}>
+              Un risque d’infertilité a été détecté par l’application. Ainsi
+              nous vous conseillons de prendre rendez-vous auprès du service de
+              Médecine de la Reproduction du CHU de Toulouse au 0567771102 en
+              précisant « application Predict F » afin d’effectuer un diagnostic
+              auprès d’un professionnel.
+            </Text>
+          </View>
+        ) : (
+          <>
+            <AdviceSection
+              label="Pour tout le monde"
+              badgeStyle={{ backgroundColor: "#FFF9C4", color: "#065f46" }}
+              items={result.factors.general}
+            />
+            <AdviceSection
+              label="Madame"
+              badgeStyle={{ backgroundColor: "#F3E3F9", color: "#065f46" }}
+              items={result.factors.female}
+            />
+            <AdviceSection
+              label="Monsieur"
+              badgeStyle={{ backgroundColor: "#EAF2FB", color: "#065f46" }}
+              items={result.factors.male}
+            />
+          </>
+        )}
       </View>
 
       <View style={styles.referenceBox}>
         <Text style={styles.referenceText}>
-          Les algorithmes de dépistage et de prévention de l'application ont été développés sous la supervision du Pr Nicolas Gatimel du CHU de Toulouse, France. Ils sont fondés sur une revue structurée de la littérature scientifique selon une méthodologie validée, suivie d'un consensus d'experts au sein d'une équipe multidisciplinaire (gynécologues, andrologues et biologistes de la reproduction). Toutes les recommandations et évaluations du risque mises en œuvre dans l'application découlent de ce processus fondé sur les preuves, garantissant transparence, fiabilité et pertinence clinique.
+          Les algorithmes de dépistage et de prévention de l'application ont été
+          développés sous la supervision du Pr Nicolas Gatimel du CHU de
+          Toulouse, France. Ils sont fondés sur une revue structurée de la
+          littérature scientifique selon une méthodologie validée, suivie d'un
+          consensus d'experts au sein d'une équipe multidisciplinaire
+          (gynécologues, andrologues et biologistes de la reproduction). Toutes
+          les recommandations et évaluations du risque mises en œuvre dans
+          l'application découlent de ce processus fondé sur les preuves,
+          garantissant transparence, fiabilité et pertinence clinique.
         </Text>
       </View>
     </ScrollView>
@@ -249,6 +280,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#94a3b8",
     fontStyle: "italic",
+  },
+  highRiskBox: {
+    backgroundColor: "#fff",
+    borderColor: "#d1d5db",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 16,
+    marginTop: 10,
+  },
+  highRiskIcon: {
+    fontSize: 28,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  highRiskMessage: {
+    fontSize: 14,
+    color: "#111827",
+    lineHeight: 22,
+    textAlign: "left",
   },
   referenceBox: {
     marginTop: 16,

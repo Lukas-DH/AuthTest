@@ -49,23 +49,26 @@ export default function QuestionnaireScreen() {
   const [showOnboarding, setShowOnboarding] = useState(true);
   const { session, isLoading } = useSession();
   const [selectedSex, setSelectedSex] = useState<"male" | "female" | null>(
-    null
+    null,
   );
   const [maleCompleted, setMaleCompleted] = useState(false);
   const [femaleCompleted, setFemaleCompleted] = useState(false);
   const [scoreRisk, setScoreRisk] = useState(0);
   const [answersId, setAnswersId] = useState<string | null>(null);
-  const { user, jwt } = session ? JSON.parse(session) : { user: null, jwt: null };
+  const { user, jwt } = session
+    ? JSON.parse(session)
+    : { user: null, jwt: null };
 
   const fetchUserProgress = async () => {
     if (!user?.id) return;
     const response = await fetch(
       `${process.env.EXPO_PUBLIC_API_URL}/api/users/me?populate=xresponses`,
-      { headers: { Authorization: `Bearer ${jwt}` } }
+      { headers: { Authorization: `Bearer ${jwt}` } },
     );
     const data = await response.json();
     const xresponses = (data.xresponses || []).sort(
-      (a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      (a: any, b: any) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
     const latest = xresponses[0];
     if (latest) {
@@ -84,7 +87,7 @@ export default function QuestionnaireScreen() {
       }
 
       fetchUserProgress();
-    }, [user?.id, isLoading])
+    }, [user?.id, isLoading]),
   );
 
   useEffect(() => {
@@ -95,14 +98,14 @@ export default function QuestionnaireScreen() {
       setCurrentQuestionIndex(0); // Reset question index
       try {
         const res = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/quizzes`,
         );
         const json = await res.json();
 
         setQuizJson(
           (json.data[0]?.question ?? []).filter(
-            (q: Question) => q.sex === selectedSex
-          )
+            (q: Question) => q.sex === selectedSex,
+          ),
         );
       } catch (error) {
         console.error("Failed to fetch quiz:", error);
@@ -129,6 +132,8 @@ export default function QuestionnaireScreen() {
     // setRiskyResponses(isHighRisk ? quizJson.map((q) => q.label) : []);
     setShowOnboarding(true);
 
+    // console.log("[submit] user.id:", user?.id, "user.documentId:", user?.documentId);
+
     const answerPayload = {
       [currentSex === "male" ? "answerMale" : "answerFemale"]: answers,
       [`${currentSex}Completed`]: true,
@@ -140,6 +145,7 @@ export default function QuestionnaireScreen() {
       myHeaders.append("Authorization", `Bearer ${jwt}`);
 
       const body = JSON.stringify({ data: answerPayload });
+      // console.log("[submit] payload:", body);
 
       if (answersId) {
         // UPDATE existing entry
@@ -149,7 +155,7 @@ export default function QuestionnaireScreen() {
             headers: myHeaders,
             method: "PUT",
             body,
-          }
+          },
         );
         setSelectedSex(null);
         setAnswers({});
@@ -161,7 +167,7 @@ export default function QuestionnaireScreen() {
             headers: myHeaders,
             method: "POST",
             body,
-          }
+          },
         );
         if (!response.ok) {
           throw new Error(`Failed to create response: ${response.status}`);
@@ -315,7 +321,7 @@ export default function QuestionnaireScreen() {
                   }}
                 >
                   {Math.round(
-                    ((currentQuestionIndex + 1) / quizJson.length) * 100
+                    ((currentQuestionIndex + 1) / quizJson.length) * 100,
                   )}
                   % complété
                 </Text>

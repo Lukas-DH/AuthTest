@@ -36,7 +36,7 @@ export default function InfoScreen() {
               ne garantit pas l’obtention rapide d’une grossesse. De plus, cette
               application n’a pas été conçue pour estimer vos chances de
               grossesse et ne remplace pas une consultation médicale lorsque
-              celle-ci peut s’avérer.
+              celle-ci peut s’avérer nécessaire.
             </Text>
             {/* <Text style={styles.note}>
               Remarque : cette application ne remplace pas un avis médical.

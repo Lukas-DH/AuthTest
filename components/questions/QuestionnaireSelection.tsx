@@ -32,8 +32,9 @@ export default function QuestionnaireSelection({
       <View style={styles.header}>
         <Text style={styles.title}>Bienvenue</Text>
         <Text style={styles.description}>
-          Répondez à quelques questions pour recevoir des conseils
-          personnalisés.
+          Répondez à ces quelques questions pour recevoir les conseils de
+          prévention et de dépistage de l'infertilité. Il est indispensable que
+          chaque membre du couple réponde à son questionnaire.
         </Text>
       </View>
       <View style={styles.content}>
@@ -41,6 +42,7 @@ export default function QuestionnaireSelection({
           L’évaluation vous prendra environ 10 à 15 minutes et inclut des
           questions sur :{/* {"\n\n"}• Sur votre santé en général */}
           {"\n"}• Vos modes de vie.
+          {"\n"}• Vos antécédents médicaux.
           {"\n"}• Vos expositions aux toxiques environnementaux.
           {"\n"}
         </Text>

@@ -1,6 +1,11 @@
 export function calculateScore(answers: Record<string, any>): number {
   let score = 0;
 
+  const normalize = (s: string) =>
+    s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const toList = (val: any): string[] =>
+    Array.isArray(val) ? val : (val ? [val] : []);
+
   if (parseFloat(answers["F.4.1"]) > 12) score += 1;
   if (answers["F.5.2"] === "yes") score += 1;
   if (answers["F.6"] === "no") score += 1;
@@ -8,23 +13,11 @@ export function calculateScore(answers: Record<string, any>): number {
     score += 1;
   if (answers["F.7"] === "yes") score += 1;
   if (answers["F.8"] === "yes") score += 1;
-  if (Array.isArray(answers["F.9.2.1"]) || answers["F.9.2.1"] === "both")
-    score += 1;
-  if (answers["F.9.2.1"] === "yes") score += 1;
-  if (answers["F.9.1.1"] === "yes") score += 1;
+  if (answers["F.9.2.1"] === "les deux") score += 1;
+  if (answers["F.9.1.1"] === "les deux") score += 1;
   if (answers["F.9.3"] === "yes") score += 1;
   if (answers["F.9.4"] === "yes") score += 1;
-  if (
-    Array.isArray(answers["F.16.1"]) &&
-    answers["F.16.1"]
-      .map((s: string) =>
-        s
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-      )
-      .includes("steroides anabolisants")
-  )
+  if (toList(answers["F.16.1"]).map(normalize).includes("steroides anabolisants"))
     score += 1;
 
   if (answers["H.5"] === "yes") score += 1;
@@ -43,21 +36,10 @@ export function calculateScore(answers: Record<string, any>): number {
       ))
   )
     score += 1;
-  if (answers["H.13"] === "yes") score += 1;
+  if (answers["H.13.1"] === "yes") score += 1;
   if (answers["H.14.1"] === "yes") score += 1;
   if (answers["H.15"] === "yes") score += 1;
-
-  if (
-    Array.isArray(answers["F.19.1"]) &&
-    answers["F.19.1"]
-      .map((s: string) =>
-        s
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-      )
-      .includes("steroides anabolisants")
-  )
+  if (toList(answers["H.19.1"]).map(normalize).includes("steroides anabolisants"))
     score += 1;
 
   return score;

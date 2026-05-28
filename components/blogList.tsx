@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Pressable,
+} from "react-native";
 import BlogCard from "./blogCard";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -17,7 +23,7 @@ export default function BlogList() {
       setFetchError(false);
       try {
         let res = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`,
         );
         let json = await res.json();
         setPosts(json.data);
@@ -32,7 +38,14 @@ export default function BlogList() {
     fetchPosts();
   }, [retryKey]);
 
-  if (loading) return <ActivityIndicator size="large" color="#047857" style={{ marginTop: 40 }} />;
+  if (loading)
+    return (
+      <ActivityIndicator
+        size="large"
+        color="#047857"
+        style={{ marginTop: 40 }}
+      />
+    );
 
   if (fetchError) {
     return (
@@ -40,7 +53,10 @@ export default function BlogList() {
         <Text style={styles.errorText}>
           Impossible de charger les articles. Vérifiez votre connexion internet.
         </Text>
-        <Pressable style={styles.retryButton} onPress={() => setRetryKey(k => k + 1)}>
+        <Pressable
+          style={styles.retryButton}
+          onPress={() => setRetryKey((k) => k + 1)}
+        >
           <Text style={styles.retryButtonText}>Réessayer</Text>
         </Pressable>
       </View>
@@ -48,7 +64,7 @@ export default function BlogList() {
   }
   console.log("Posts loaded:", posts.length);
   return (
-    <View style={{ width: '100%', alignItems: 'center' }}>
+    <View style={{ width: "100%", alignItems: "center" }}>
       {Array.isArray(posts) &&
         posts.map((post) => {
           const isPdf = post.image?.mime === "application/pdf";
@@ -68,11 +84,11 @@ export default function BlogList() {
                   // For markdown posts, navigate to the post viewer
                   router.push({
                     pathname: "/posts/[documentId]",
-                    params: { documentId: post.documentId.toString() }
+                    params: { documentId: post.documentId.toString() },
                   });
                 }
               }}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             >
               <BlogCard
                 key={post.documentId}
@@ -86,7 +102,16 @@ export default function BlogList() {
         })}
       <View style={styles.referenceBox}>
         <Text style={styles.referenceText}>
-          Les algorithmes de dépistage et de prévention de l'application ont été développés sous la supervision du Pr Nicolas Gatimel du CHU de Toulouse, France. Ils sont fondés sur une revue structurée de la littérature scientifique selon une méthodologie validée, suivie d'un consensus d'experts au sein d'une équipe multidisciplinaire (gynécologues, andrologues et biologistes de la reproduction). Toutes les recommandations et évaluations du risque mises en œuvre dans l'application découlent de ce processus fondé sur les preuves, garantissant transparence, fiabilité et pertinence clinique.
+          Les algorithmes de dépistage et de prévention de l'application ont été
+          développés sous la supervision du Pr Nicolas Gatimel et Louana
+          Clementoni du CHU de Toulouse, France. Ils sont fondés sur une revue
+          structurée de la littérature scientifique selon une méthodologie
+          validée, suivie d'un consensus d'experts au sein d'une équipe
+          multidisciplinaire (gynécologues, andrologues et biologistes de la
+          reproduction). Toutes les recommandations et évaluations du risque
+          mises en œuvre dans l'application découlent de ce processus fondé sur
+          les preuves, garantissant transparence, fiabilité et pertinence
+          clinique.
         </Text>
       </View>
     </View>

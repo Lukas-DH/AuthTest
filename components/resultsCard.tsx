@@ -166,14 +166,15 @@ export function ResultsCard({
       <View style={styles.referenceBox}>
         <Text style={styles.referenceText}>
           Les algorithmes de dépistage et de prévention de l'application ont été
-          développés sous la supervision du Pr Nicolas Gatimel du CHU de
-          Toulouse, France. Ils sont fondés sur une revue structurée de la
-          littérature scientifique selon une méthodologie validée, suivie d'un
-          consensus d'experts au sein d'une équipe multidisciplinaire
-          (gynécologues, andrologues et biologistes de la reproduction). Toutes
-          les recommandations et évaluations du risque mises en œuvre dans
-          l'application découlent de ce processus fondé sur les preuves,
-          garantissant transparence, fiabilité et pertinence clinique.
+          développés sous la supervision du Pr Nicolas Gatimel et Louana
+          Clementoni du CHU de Toulouse, France. Ils sont fondés sur une revue
+          structurée de la littérature scientifique selon une méthodologie
+          validée, suivie d'un consensus d'experts au sein d'une équipe
+          multidisciplinaire (gynécologues, andrologues et biologistes de la
+          reproduction). Toutes les recommandations et évaluations du risque
+          mises en œuvre dans l'application découlent de ce processus fondé sur
+          les preuves, garantissant transparence, fiabilité et pertinence
+          clinique.
         </Text>
       </View>
     </ScrollView>

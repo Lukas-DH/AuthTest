@@ -42,7 +42,7 @@ export default function QuestionnaireSelection({
       </View>
       <View style={styles.content}>
         <Text style={styles.description}>
-          L'évaluation vous prendra environ 10 à 15 minutes et inclut des
+          L'évaluation vous prendra environ 5 à 10 minutes et inclut des
           questions sur :{/* {"\n\n"}• Sur votre santé en général */}
           {"\n"}• Vos modes de vie.
           {"\n"}• Vos antécédents médicaux.
@@ -180,7 +180,12 @@ export default function QuestionnaireSelection({
           {retaking ? (
             <ActivityIndicator size="small" color="#FFF" style={styles.icon} />
           ) : (
-            <Feather name="refresh-ccw" size={16} color="#FFF" style={styles.icon} />
+            <Feather
+              name="refresh-ccw"
+              size={16}
+              color="#FFF"
+              style={styles.icon}
+            />
           )}
         </Pressable>
       )}

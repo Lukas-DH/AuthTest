@@ -4,7 +4,7 @@ export function calculateScore(answers: Record<string, any>): number {
   const normalize = (s: string) =>
     s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const toList = (val: any): string[] =>
-    Array.isArray(val) ? val : (val ? [val] : []);
+    Array.isArray(val) ? val : val ? [val] : [];
 
   if (parseFloat(answers["F.4.1"]) > 12) score += 1;
   if (answers["F.5.2"] === "yes") score += 1;
@@ -13,11 +13,16 @@ export function calculateScore(answers: Record<string, any>): number {
     score += 1;
   if (answers["F.7"] === "yes") score += 1;
   if (answers["F.8"] === "yes") score += 1;
-  if (["both", "les deux"].includes(normalize(answers["F.9.2.1"] ?? ""))) score += 1;
-  if (["both", "les deux"].includes(normalize(answers["F.9.1.1"] ?? ""))) score += 1;
+  if (["both", "les deux"].includes(normalize(answers["F.9.2.1"] ?? "")))
+    score += 1;
+  if (["both", "les deux"].includes(normalize(answers["F.9.1.1"] ?? "")))
+    score += 1;
   if (answers["F.9.3"] === "yes") score += 1;
   if (answers["F.9.4"] === "yes") score += 1;
-  if (toList(answers["F.16.1"]).map(normalize).includes("steroides anabolisants"))
+  if (answers["F.22.1"] === "yes") score += 1;
+  if (
+    toList(answers["F.16.1"]).map(normalize).includes("steroides anabolisants")
+  )
     score += 1;
 
   if (answers["H.5"] === "yes") score += 1;
@@ -32,14 +37,17 @@ export function calculateScore(answers: Record<string, any>): number {
       answers["H.12"].some(
         (val: string) =>
           val.toLowerCase() === "très souvent" ||
-          val.toLowerCase() === "souvent"
+          val.toLowerCase() === "souvent",
       ))
   )
     score += 1;
   if (answers["H.13.1"] === "yes") score += 1;
   if (answers["H.14.1"] === "yes") score += 1;
   if (answers["H.15"] === "yes") score += 1;
-  if (toList(answers["H.19.1"]).map(normalize).includes("steroides anabolisants"))
+  if (answers["H.25.1"] === "yes") score += 1;
+  if (
+    toList(answers["H.19.1"]).map(normalize).includes("steroides anabolisants")
+  )
     score += 1;
 
   return score;

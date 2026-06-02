@@ -13,8 +13,8 @@ export function calculateScore(answers: Record<string, any>): number {
     score += 1;
   if (answers["F.7"] === "yes") score += 1;
   if (answers["F.8"] === "yes") score += 1;
-  if (answers["F.9.2.1"] === "les deux") score += 1;
-  if (answers["F.9.1.1"] === "les deux") score += 1;
+  if (["both", "les deux"].includes(normalize(answers["F.9.2.1"] ?? ""))) score += 1;
+  if (["both", "les deux"].includes(normalize(answers["F.9.1.1"] ?? ""))) score += 1;
   if (answers["F.9.3"] === "yes") score += 1;
   if (answers["F.9.4"] === "yes") score += 1;
   if (toList(answers["F.16.1"]).map(normalize).includes("steroides anabolisants"))

@@ -144,6 +144,9 @@ export default function QuestionnaireScreen() {
     setScoreRisk(score);
     const isHighRisk = score >= 1;
 
+    // Snapshot answers now — they get cleared (setAnswers({})) after the Strapi call
+    const sheetPayload = { ...answers };
+
     const answerPayload = {
       [currentSex === "male" ? "answerMale" : "answerFemale"]: answers,
       [`${currentSex}Completed`]: true,
@@ -191,6 +194,17 @@ export default function QuestionnaireScreen() {
       }
       // Refresh user progress to update completion status
       await fetchUserProgress();
+
+      // Mirror answers to the Google Sheet (best-effort, never blocks submission)
+      const proxyUrl = process.env.EXPO_PUBLIC_SHEETS_PROXY_URL;
+      if (proxyUrl) {
+        fetch(`${proxyUrl}/api/submit-answers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documentId: user?.documentId, ...sheetPayload }),
+        }).catch((err) => console.warn("[sheet] forward failed:", err));
+      }
+
       setShowOnboarding(true);
     } catch (error) {
       console.error("Failed to submit answers:", error);

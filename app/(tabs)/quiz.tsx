@@ -23,6 +23,7 @@ import {
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionnaireSelection from "@/components/questions/QuestionnaireSelection";
 import { calculateScore } from "@/utils/quizScoring";
+import { pruneAnswers } from "@/utils/quizTree";
 
 export default function QuestionnaireScreen() {
   interface Question {
@@ -35,6 +36,7 @@ export default function QuestionnaireScreen() {
     unit?: string;
     choices?: string[];
     followUp?: Question[];
+    followUpNo?: Question[];
     points?: number;
     min: string;
     max: string;
@@ -54,7 +56,6 @@ export default function QuestionnaireScreen() {
   );
   const [maleCompleted, setMaleCompleted] = useState(false);
   const [femaleCompleted, setFemaleCompleted] = useState(false);
-  const [scoreRisk, setScoreRisk] = useState(0);
   const [answersId, setAnswersId] = useState<string | null>(null);
   const [progressLoading, setProgressLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -133,22 +134,23 @@ export default function QuestionnaireScreen() {
   }, [selectedSex]);
 
   const handleAnswerChange = (questionId: string, answer: string) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
+    // Re-prune on every change: switching a parent branch must drop the answers
+    // that are no longer shown, at any depth (F.9 -> F.9.1 -> F.9.1.1).
+    setAnswers((prev) =>
+      pruneAnswers(quizJson, { ...prev, [questionId]: answer }),
+    );
   };
 
   const handleSubmit = async () => {
     const currentSex = selectedSex;
-    let score = scoreRisk;
-    score = score + calculateScore(answers);
-    answers["score"] = score.toString();
-    setScoreRisk(score);
-    const isHighRisk = score >= 1;
-
-    // Snapshot answers now — they get cleared (setAnswers({})) after the Strapi call
-    const sheetPayload = { ...answers };
+    // Safety net — nothing unreachable should ever be scored or persisted.
+    const cleanedAnswers = pruneAnswers(quizJson, answers);
+    // Each record holds its own score only; results.tsx sums the two partners.
+    const score = calculateScore(cleanedAnswers);
+    const submittedAnswers = { ...cleanedAnswers, score: String(score) };
 
     const answerPayload = {
-      [currentSex === "male" ? "answerMale" : "answerFemale"]: answers,
+      [currentSex === "male" ? "answerMale" : "answerFemale"]: submittedAnswers,
       [`${currentSex}Completed`]: true,
     };
 
@@ -201,7 +203,10 @@ export default function QuestionnaireScreen() {
         fetch(`${proxyUrl}/api/submit-answers`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ documentId: user?.documentId, ...sheetPayload }),
+          body: JSON.stringify({
+            documentId: user?.documentId,
+            ...submittedAnswers,
+          }),
         }).catch((err) => console.warn("[sheet] forward failed:", err));
       }
 
@@ -235,7 +240,6 @@ export default function QuestionnaireScreen() {
     setAnswers({});
     setCurrentQuestionIndex(0);
     setSelectedSex(null);
-    setScoreRisk(0);
     setFetchError(null);
     setSubmitError(null);
   };
@@ -246,7 +250,6 @@ export default function QuestionnaireScreen() {
     setAnswers({});
     setCurrentQuestionIndex(0);
     setSelectedSex(null);
-    setScoreRisk(0);
     setRetaking(true);
     try {
       await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/xresponses`, {

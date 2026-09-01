@@ -22,16 +22,30 @@ export default function ResultsScreen() {
   const [maleCompleted, setMaleCompleted] = useState(false);
   const [femaleCompleted, setFemaleCompleted] = useState(false);
   const [fetchError, setFetchError] = useState(false);
-  type FactorItem = { documentId: string; name: string; description: string; pdfUrl: string | null };
-  const [adviceFactors, setAdviceFactors] = useState<{ general: FactorItem[]; female: FactorItem[]; male: FactorItem[] }>({ general: [], female: [], male: [] });
+  type FactorItem = {
+    documentId: string;
+    name: string;
+    description: string;
+    pdfUrl: string | null;
+  };
+  const [adviceFactors, setAdviceFactors] = useState<{
+    general: FactorItem[];
+    female: FactorItem[];
+    male: FactorItem[];
+  }>({ general: [], female: [], male: [] });
 
   const { session, isLoading } = useSession();
   const router = useRouter();
-  const { user, jwt } = session ? JSON.parse(session) : { user: null, jwt: null };
+  const { user, jwt } = session
+    ? JSON.parse(session)
+    : { user: null, jwt: null };
 
   const questions = [
     { id: "F.1", label: "Quel est votre âge ?" },
-    { id: "F.9", label: "Avez-vous déjà subi une chirurgie au niveau du bas-ventre ?" },
+    {
+      id: "F.9",
+      label: "Avez-vous déjà subi une chirurgie au niveau du bas-ventre ?",
+    },
     { id: "F.16.1", label: "Lesquelles ? :" },
   ];
 
@@ -42,11 +56,12 @@ export default function ResultsScreen() {
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/api/users/me?populate=xresponses`,
-        { headers: { Authorization: `Bearer ${jwt}` } }
+        { headers: { Authorization: `Bearer ${jwt}` } },
       );
       const json = await response.json();
       const xresponses = (json.xresponses || []).sort(
-        (a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        (a: any, b: any) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
       );
 
       if (xresponses.length > 0) {
@@ -59,7 +74,7 @@ export default function ResultsScreen() {
         const postTitles = generateAdviceFactors(combinedAnswers);
 
         const postsResponse = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`
+          `${process.env.EXPO_PUBLIC_API_URL}/api/posts?populate=image`,
         );
         const postsJson = await postsResponse.json();
 
@@ -70,12 +85,18 @@ export default function ResultsScreen() {
           pdfUrl: post.image?.url || null,
         });
 
-        const filtered = postsJson.data.filter((post: any) => postTitles.includes(post.title));
+        const filtered = postsJson.data.filter((post: any) =>
+          postTitles.includes(post.title),
+        );
 
         setAdviceFactors({
-          general: filtered.filter((p: any) => p.content === 'Pour tout le monde').map(mapPost),
-          female:  filtered.filter((p: any) => p.content === 'female').map(mapPost),
-          male:    filtered.filter((p: any) => p.content === 'male').map(mapPost),
+          general: filtered
+            .filter((p: any) => p.content === "Pour tout le monde")
+            .map(mapPost),
+          female: filtered
+            .filter((p: any) => p.content === "female")
+            .map(mapPost),
+          male: filtered.filter((p: any) => p.content === "male").map(mapPost),
         });
 
         const maleScore = male.score ? parseInt(male.score, 10) : 0;
@@ -96,12 +117,17 @@ export default function ResultsScreen() {
     useCallback(() => {
       if (isLoading || !user?.id) return;
       fetchLatest();
-    }, [fetchLatest, isLoading])
+    }, [fetchLatest, isLoading]),
   );
 
   if (loading || isLoading || !user) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <ActivityIndicator size="large" color="#047857" />
       </View>
     );
@@ -109,9 +135,15 @@ export default function ResultsScreen() {
 
   if (fetchError) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <Text style={styles.messageText}>
-          Impossible de charger les résultats. Vérifiez votre connexion internet.
+          Impossible de charger les résultats. Vérifiez votre connexion
+          internet.
         </Text>
         <Pressable style={styles.actionButton} onPress={fetchLatest}>
           <Text style={styles.actionButtonText}>Réessayer</Text>
@@ -122,12 +154,20 @@ export default function ResultsScreen() {
 
   if (!maleCompleted || !femaleCompleted) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <Text style={styles.messageText}>
           Les résultats n'ont pas encore été générés. Les deux partenaires
           doivent compléter le quiz.
         </Text>
-        <Pressable style={styles.actionButton} onPress={() => router.replace("/quiz")}>
+        <Pressable
+          style={styles.actionButton}
+          onPress={() => router.replace("/quiz")}
+        >
           <Text style={styles.actionButtonText}>Retourner au quiz</Text>
         </Pressable>
       </View>

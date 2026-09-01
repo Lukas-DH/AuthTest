@@ -19,7 +19,7 @@ export function calculateScore(answers: Record<string, any>): number {
     score += 1;
   if (answers["F.9.3"] === "yes") score += 1;
   if (answers["F.9.4"] === "yes") score += 1;
-  if (answers["F.22.1"] === "yes") score += 1;
+  if (answers["F.22.2"] === "yes") score += 1;
   if (
     toList(answers["F.16.1"]).map(normalize).includes("steroides anabolisants")
   )
@@ -29,6 +29,7 @@ export function calculateScore(answers: Record<string, any>): number {
   if (answers["H.6"] === "yes") score += 1;
   if (answers["H.10"] === "yes") score += 1;
   if (answers["H.11"] === "yes") score += 1;
+  if (answers["H.4.2"] === "yes") score += 1;
   if (
     (typeof answers["H.12"] === "string" &&
       (answers["H.12"].toLowerCase() === "très souvent" ||
@@ -43,8 +44,8 @@ export function calculateScore(answers: Record<string, any>): number {
     score += 1;
   if (answers["H.13.1"] === "yes") score += 1;
   if (answers["H.14.1"] === "yes") score += 1;
-  if (answers["H.15"] === "yes") score += 1;
-  if (answers["H.25.1"] === "yes") score += 1;
+  // if (answers["H.15"] === "yes") score += 1;
+  if (answers["H.25.2"] === "yes") score += 1;
   if (
     toList(answers["H.19.1"]).map(normalize).includes("steroides anabolisants")
   )
